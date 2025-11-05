@@ -1,2 +1,15 @@
 # Repositorio Dev+Git
-Projeto de extensão Dev+Git
+
+Atividade de extensão dev+git
+
+nome do ecommerce: DevStore
+
+integrante líder 1: Caio Gomulski  
+integrante 2: Rian Salin  
+integrante 3: Leonardo Sena
+integrante 4: Davi Resende 
+integrante 5: Gustavo Biscoto
+
+tecnologias utilizadas: HTML, CSS E JavaScript
+
+tipo de licença: uso livre 
