@@ -12,4 +12,5 @@ integrante 5: Gustavo Biscoto
 
 tecnologias utilizadas: HTML, CSS E JavaScript
 
-tipo de licença: uso livre 
+Atividade 2:
+link para acessar pagina https://repositorio-dev-git-e-commerce.onrender.com/
