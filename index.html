@@ -1,23 +1,185 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <!-- Básico obrigatório -->
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- SEO básico -->
-  <title>Minha Página</title>
-  <meta name="description" content="dev-git" />
-  <meta name="author" content="" />
-
+  <title>AchouTáAqui</title>
+  <meta name="description" content="E-commerce fictício de tecnologia" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-  <!-- Cabeçalho do site -->
+  <header class="site-header">
+    <div class="container">
+      <a class="logo" href="#">Achou<span>TáAqui</span></a>
+      <nav class="menu">
+        <a href="#produtos">Produtos</a>
+        <a href="#vantagens">Vantagens</a>
+        <a href="#depoimentos">Depoimentos</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <div class="header-actions">
+        <button class="ghost-btn">Entrar</button>
+        <button class="primary-btn" id="cartButton">
+          <span class="material-icon">shopping_bag</span>
+          <span>Carrinho</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
 
-  <!-- JS (coloca no fim pra carregar a página primeiro) -->
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <p class="eyebrow">Novidades da semana</p>
+          <h1>Experiências digitais para quem vive tecnologia</h1>
+          <p class="lead">Escolhemos gadgets e acessórios que acompanham seus estudos, trabalho e lazer. Produtos com envio rápido e garantia nacional.</p>
+          <div class="hero__actions">
+            <a class="primary-btn" href="#produtos">Ver ofertas</a>
+            <button class="ghost-btn" id="newsletterButton">Receber novidades</button>
+          </div>
+          <ul class="hero__stats">
+            <li>
+              <strong>+2.5k</strong>
+              <span>Pedidos enviados</span>
+            </li>
+            <li>
+              <strong>48h</strong>
+              <span>Média de entrega</span>
+            </li>
+            <li>
+              <strong>4.9/5</strong>
+              <span>Satisfação</span>
+            </li>
+          </ul>
+        </div>
+        <div class="hero__image">
+          <img src="styles/image.png" alt="Coleção de gadgets modernos" loading="lazy" />
+          <div class="hero__badge">
+            <p>Frete grátis nas compras acima de R$299</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="featured" id="vantagens">
+      <div class="container">
+        <article class="highlight-card">
+          <img src="styles/image copy 2.png" alt="Mulher usando fones sem fio" loading="lazy" />
+          <div>
+            <p class="eyebrow">Coleção Studio</p>
+            <h2>Design minimalista, performance máxima.</h2>
+            <p>Headsets, teclados e acessórios criados para quem passa o dia conectado. Materiais premium e conforto prolongado.</p>
+            <a href="#produtos" class="link">Ver coleção →</a>
+          </div>
+        </article>
+        <ul class="perks">
+          <li>
+            <h3>Garantia estendida</h3>
+            <p>Até 2 anos de cobertura para você comprar sem medo.</p>
+          </li>
+          <li>
+            <h3>Atendimento humano</h3>
+            <p>Especialistas disponíveis por chat ou telefone.</p>
+          </li>
+          <li>
+            <h3>Pagamento flexível</h3>
+            <p>Cartão, Pix, boleto e assinatura mensal.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="products" id="produtos">
+      <div class="container">
+        <header class="section-heading">
+          <div>
+            <p class="eyebrow">Escolhas do time</p>
+            <h2>Produtos em destaque</h2>
+          </div>
+          <button class="ghost-btn small" id="filterButton">Filtrar</button>
+        </header>
+        <div class="products__grid" id="productGrid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="cta-banner">
+      <div class="container banner__grid">
+        <div>
+          <p class="eyebrow">Combo trabalho e estudos</p>
+          <h2>Up grade imediato para o seu setup.</h2>
+          <p>Compre um notebook + acessório e ganhe 10% OFF. Oferta válida até domingo.</p>
+          <a class="primary-btn" href="#produtos">Quero aproveitar</a>
+        </div>
+        <img src="styles/image copy.png" alt="Notebook aberto com itens ao redor" loading="lazy" />
+      </div>
+    </section>
+
+    <section class="testimonials" id="depoimentos">
+      <div class="container">
+        <header class="section-heading">
+          <p class="eyebrow">Confiança real</p>
+          <h2>Depoimentos recentes</h2>
+        </header>
+        <div class="testimonial-cards">
+          <article>
+            <p>“Recebi meu teclado em 2 dias e o atendimento ajudou a configurar tudo. Voltarei a comprar!”</p>
+            <h3>Laura Souza</h3>
+            <span>Designer de Produto</span>
+          </article>
+          <article>
+            <p>“A curadoria é impecável. Cada peça do kit home office veio com materiais premium.”</p>
+            <h3>Victor Oliveira</h3>
+            <span>Arquiteto</span>
+          </article>
+          <article>
+            <p>“Adorei o programa de assinatura. Recebo acessórios novos todo trimestre.”</p>
+            <h3>Danilo Ribeiro</h3>
+            <span>Conteudista</span>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contato">
+    <div class="container footer__grid">
+      <div>
+        <a class="logo" href="#">Achou<span>AchouTáAqui</span></a>
+        <p>Av. das Inovações, 123 • São Paulo, SP</p>
+        <p>contato@AchouTáAqui.com</p>
+      </div>
+      <div>
+        <h4>Atendimento</h4>
+        <p>Seg - Sex • 9h às 20h</p>
+        <p>0800 123 456</p>
+      </div>
+      <div>
+        <h4>Receba novidades</h4>
+        <form id="newsletterForm">
+          <label class="sr-only" for="newsletterEmail">Seu e-mail</label>
+          <input type="email" id="newsletterEmail" name="email" placeholder="nome@email.com" required />
+          <button class="primary-btn small" type="submit">Cadastrar</button>
+        </form>
+        <p class="newsletter-feedback" id="newsletterFeedback" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+    <p class="copyright">© <span id="currentYear"></span> AchouTáAqui. Todos os direitos reservados.</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <p>Item adicionado ao carrinho</p>
+  </div>
+
   <script src="main.js"></script>
 </body>
-</html>
 
+</html>
