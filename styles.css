@@ -153,7 +153,7 @@ a {
 .hero__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  gap: 2.5rem;
   align-items: center;
 }
 
