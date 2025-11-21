@@ -147,7 +147,7 @@ a {
 }
 
 .hero {
-  padding: 4rem 0 3rem;
+  padding: 4.5rem 0 3.5rem;
 }
 
 .hero__grid {
@@ -324,7 +324,7 @@ a {
 .banner__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 2.5rem;
+  gap: 3rem;
   align-items: center;
 }
 
