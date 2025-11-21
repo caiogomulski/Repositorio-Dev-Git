@@ -55,16 +55,18 @@ const productData = [
   },
 ];
 
-const productGrid = document.getElementById("productGrid");
-const cartCountEl = document.getElementById("cartCount");
-const cartButton = document.getElementById("cartButton");
-const toast = document.getElementById("toast");
-const filterButton = document.getElementById("filterButton");
-const newsletterForm = document.getElementById("newsletterForm");
-const newsletterFeedback = document.getElementById("newsletterFeedback");
-const newsletterButton = document.getElementById("newsletterButton");
-const newsletterEmail = document.getElementById("newsletterEmail");
-const currentYearEl = document.getElementById("currentYear");
+const elements = {
+  productGrid: document.getElementById("productGrid"),
+  cartCount: document.getElementById("cartCount"),
+  cartButton: document.getElementById("cartButton"),
+  toast: document.getElementById("toast"),
+  filterButton: document.getElementById("filterButton"),
+  newsletterForm: document.getElementById("newsletterForm"),
+  newsletterFeedback: document.getElementById("newsletterFeedback"),
+  newsletterButton: document.getElementById("newsletterButton"),
+  newsletterEmail: document.getElementById("newsletterEmail"),
+  currentYear: document.getElementById("currentYear"),
+};
 
 let cartCount = 0;
 let toastTimeout = null;
@@ -77,8 +79,10 @@ const formatCurrency = (value) =>
   }).format(value);
 
 const renderProducts = (list) => {
-  if (!productGrid) return;
-  productGrid.innerHTML = "";
+  if (!elements.productGrid) return;
+  elements.productGrid.innerHTML = "";
+
+  const fragment = document.createDocumentFragment();
 
   list.forEach((product) => {
     const card = document.createElement("article");
@@ -93,59 +97,62 @@ const renderProducts = (list) => {
         Adicionar
       </button>
     `;
-
     const button = card.querySelector("button");
     button.addEventListener("click", () => addToCart(product));
-    productGrid.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  elements.productGrid.appendChild(fragment);
 };
 
 const addToCart = (product) => {
   cartCount += 1;
-  cartCountEl.textContent = cartCount;
+  if (elements.cartCount) {
+    elements.cartCount.textContent = cartCount;
+  }
   const message = `${product.name} adicionado ao carrinho`;
   showToast(message);
 };
 
 const showToast = (message) => {
-  if (!toast) return;
-  toast.textContent = message;
-  toast.classList.add("show");
+  if (!elements.toast) return;
+  elements.toast.textContent = message;
+  elements.toast.classList.add("show");
 
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => {
-    toast.classList.remove("show");
+    elements.toast.classList.remove("show");
   }, 2500);
 };
 
-filterButton?.addEventListener("click", () => {
+elements.filterButton?.addEventListener("click", () => {
   showHomeOfficeOnly = !showHomeOfficeOnly;
   const filtered = showHomeOfficeOnly
     ? productData.filter((product) => product.category === "home-office")
     : productData;
-  filterButton.textContent = showHomeOfficeOnly ? "Limpar filtro" : "Filtrar";
+  elements.filterButton.textContent = showHomeOfficeOnly ? "Limpar filtro" : "Filtrar";
   renderProducts(filtered);
 });
 
-newsletterForm?.addEventListener("submit", (event) => {
+elements.newsletterForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(event.currentTarget);
   const email = formData.get("email");
-  newsletterFeedback.textContent = `Valeu! Enviaremos novidades para ${email}.`;
+  elements.newsletterFeedback.textContent = `Valeu! Enviaremos novidades para ${email}.`;
   event.currentTarget.reset();
 });
 
-newsletterButton?.addEventListener("click", () => {
-  newsletterEmail?.scrollIntoView({ behavior: "smooth", block: "center" });
-  setTimeout(() => newsletterEmail?.focus(), 500);
+elements.newsletterButton?.addEventListener("click", () => {
+  elements.newsletterEmail?.scrollIntoView({ behavior: "smooth", block: "center" });
+  setTimeout(() => elements.newsletterEmail?.focus(), 500);
 });
 
-cartButton?.addEventListener("click", () => {
+elements.cartButton?.addEventListener("click", () => {
   showToast("Você tem " + cartCount + " item(s) no carrinho.");
 });
 
-if (currentYearEl) {
-  currentYearEl.textContent = new Date().getFullYear();
+if (elements.currentYear) {
+  elements.currentYear.textContent = new Date().getFullYear();
 }
 
 renderProducts(productData);
