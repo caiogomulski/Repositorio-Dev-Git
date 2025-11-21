@@ -61,6 +61,7 @@ const elements = {
   cartButton: document.getElementById("cartButton"),
   toast: document.getElementById("toast"),
   filterButton: document.getElementById("filterButton"),
+  sortButton: document.getElementById("sortButton"),
   newsletterForm: document.getElementById("newsletterForm"),
   newsletterFeedback: document.getElementById("newsletterFeedback"),
   newsletterButton: document.getElementById("newsletterButton"),
@@ -71,12 +72,21 @@ const elements = {
 let cartCount = 0;
 let toastTimeout = null;
 let showHomeOfficeOnly = false;
+let sortAscending = true;
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
   }).format(value);
+
+const getVisibleProducts = () => {
+  const list = showHomeOfficeOnly
+    ? productData.filter((product) => product.category === "home-office")
+    : [...productData];
+
+  return list.sort((a, b) => (sortAscending ? a.price - b.price : b.price - a.price));
+};
 
 const renderProducts = (list) => {
   if (!elements.productGrid) return;
@@ -125,20 +135,34 @@ const showToast = (message) => {
   }, 2500);
 };
 
+const updateSortButtonText = () => {
+  if (!elements.sortButton) return;
+  elements.sortButton.textContent = sortAscending ? "Menor preço" : "Maior preço";
+};
+
+const applyProductView = () => {
+  renderProducts(getVisibleProducts());
+};
+
 elements.filterButton?.addEventListener("click", () => {
   showHomeOfficeOnly = !showHomeOfficeOnly;
-  const filtered = showHomeOfficeOnly
-    ? productData.filter((product) => product.category === "home-office")
-    : productData;
   elements.filterButton.textContent = showHomeOfficeOnly ? "Limpar filtro" : "Filtrar";
-  renderProducts(filtered);
+  applyProductView();
+});
+
+elements.sortButton?.addEventListener("click", () => {
+  sortAscending = !sortAscending;
+  updateSortButtonText();
+  applyProductView();
 });
 
 elements.newsletterForm?.addEventListener("submit", (event) => {
   event.preventDefault();
   const formData = new FormData(event.currentTarget);
   const email = formData.get("email");
-  elements.newsletterFeedback.textContent = `Valeu! Enviaremos novidades para ${email}.`;
+  if (elements.newsletterFeedback) {
+    elements.newsletterFeedback.textContent = `Valeu! Enviaremos novidades para ${email}.`;
+  }
   event.currentTarget.reset();
 });
 
@@ -155,4 +179,5 @@ if (elements.currentYear) {
   elements.currentYear.textContent = new Date().getFullYear();
 }
 
-renderProducts(productData);
+updateSortButtonText();
+renderProducts(getVisibleProducts());

@@ -278,6 +278,13 @@ a {
   flex-wrap: wrap;
 }
 
+.section-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .products__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
