@@ -223,6 +223,32 @@
     </div>
   </div>
   
+  <div class="rating-overlay" id="ratingModal" aria-hidden="true">
+    <div class="rating-card">
+      <button class="close-rating" onclick="closeRatingModal()" aria-label="Fechar">&times;</button>
+      <div class="rating-header">
+        <img class="rating-product-image" src="" alt="" />
+        <h2>Avaliar produto</h2>
+        <p class="rating-product-name"></p>
+      </div>
+      <form id="ratingForm" class="rating-form">
+        <input type="hidden" id="ratingValue" value="0" required>
+        <div class="star-rating">
+          <button type="button" class="star-input" data-rating="1">★</button>
+          <button type="button" class="star-input" data-rating="2">★</button>
+          <button type="button" class="star-input" data-rating="3">★</button>
+          <button type="button" class="star-input" data-rating="4">★</button>
+          <button type="button" class="star-input" data-rating="5">★</button>
+        </div>
+        <div class="input-group">
+          <label for="ratingComment">Comentário (opcional)</label>
+          <textarea id="ratingComment" rows="4" placeholder="Compartilhe sua experiência com este produto..."></textarea>
+        </div>
+        <button type="submit" class="primary-btn full-width">Enviar avaliação</button>
+      </form>
+    </div>
+  </div>
+  
   <div class="auth-overlay" id="authModal" aria-hidden="true">
   <div class="auth-card">
     <button class="close-modal" id="closeModal" aria-label="Fechar">&times;</button>

@@ -7,6 +7,8 @@ const productData = [
     badge: "Novo",
     category: "audio",
     image: "styles/image copy 2.png",
+    rating: 4.8,
+    reviewsCount: 124,
   },
   {
     id: 2,
@@ -16,15 +18,19 @@ const productData = [
     badge: "Setup",
     category: "home-office",
     image: "styles/image copy.png",
+    rating: 4.6,
+    reviewsCount: 89,
   },
   {
     id: 3,
-    name: "Notebook Lume 14”",
+    name: "Notebook Lume 14"",
     description: "Processador de última geração e corpo ultrafino.",
     price: 4399.0,
     badge: "Mais vendido",
     category: "hardware",
     image: "styles/image.png",
+    rating: 4.9,
+    reviewsCount: 256,
   },
   {
     id: 4,
@@ -34,6 +40,8 @@ const productData = [
     badge: "Ergo",
     category: "home-office",
     image: "styles/image copy.png",
+    rating: 4.7,
+    reviewsCount: 142,
   },
   {
     id: 5,
@@ -43,15 +51,19 @@ const productData = [
     badge: "Smart",
     category: "casa",
     image: "styles/image.png",
+    rating: 4.5,
+    reviewsCount: 78,
   },
   {
     id: 6,
-    name: "Monitor Edge 27” 4K",
+    name: "Monitor Edge 27" 4K",
     description: "Painel IPS calibrado e 99% sRGB.",
     price: 2499.9,
     badge: "Pro",
     category: "hardware",
     image: "styles/image copy 2.png",
+    rating: 4.8,
+    reviewsCount: 203,
   },
 ];
 
@@ -75,6 +87,7 @@ const elements = {
 
 let cart = [];
 let favorites = [];
+let productRatings = {};
 let toastTimeout = null;
 let showHomeOfficeOnly = false;
 let sortAscending = true;
@@ -116,6 +129,63 @@ const loadFavorites = () => {
     console.error('Erro ao carregar favoritos:', error);
     favorites = [];
   }
+};
+
+// Carregar avaliações do localStorage
+const loadRatings = () => {
+  try {
+    const savedRatings = localStorage.getItem('devstore_ratings');
+    if (savedRatings) {
+      productRatings = JSON.parse(savedRatings);
+    }
+  } catch (error) {
+    console.error('Erro ao carregar avaliações:', error);
+    productRatings = {};
+  }
+};
+
+// Salvar avaliações no localStorage
+const saveRatings = () => {
+  try {
+    localStorage.setItem('devstore_ratings', JSON.stringify(productRatings));
+  } catch (error) {
+    console.error('Erro ao salvar avaliações:', error);
+  }
+};
+
+// Obter rating de um produto
+const getProductRating = (productId) => {
+  if (productRatings[productId] && productRatings[productId].length > 0) {
+    const sum = productRatings[productId].reduce((acc, r) => acc + r.rating, 0);
+    return (sum / productRatings[productId].length).toFixed(1);
+  }
+  const product = productData.find(p => p.id === productId);
+  return product ? product.rating : 0;
+};
+
+// Obter número de avaliações
+const getProductReviewsCount = (productId) => {
+  if (productRatings[productId]) {
+    return productRatings[productId].length;
+  }
+  const product = productData.find(p => p.id === productId);
+  return product ? product.reviewsCount : 0;
+};
+
+// Adicionar avaliação
+const addRating = (productId, rating, comment) => {
+  if (!productRatings[productId]) {
+    productRatings[productId] = [];
+  }
+  productRatings[productId].push({
+    rating: rating,
+    comment: comment || '',
+    date: new Date().toISOString(),
+    user: 'Usuário'
+  });
+  saveRatings();
+  showToast('Avaliação enviada com sucesso!');
+  renderProducts(getVisibleProducts());
 };
 
 // Salvar favoritos no localStorage
@@ -240,6 +310,9 @@ const renderProducts = (list) => {
       card.setAttribute('role', 'article');
       card.setAttribute('aria-label', `Produto: ${product.name}`);
       const isFav = isFavorite(product.id);
+      const rating = parseFloat(getProductRating(product.id));
+      const reviewsCount = getProductReviewsCount(product.id);
+      const stars = Math.round(rating);
       card.innerHTML = `
         <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${product.id}" aria-label="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" tabindex="0">
           <span class="material-icon">${isFav ? 'favorite' : 'favorite_border'}</span>
@@ -248,10 +321,23 @@ const renderProducts = (list) => {
         <span class="badge">${product.badge}</span>
         <h3>${product.name}</h3>
         <p>${product.description}</p>
+        <div class="product-rating">
+          <div class="stars">
+            ${Array.from({length: 5}, (_, i) => 
+              `<span class="star ${i < stars ? 'filled' : ''}">★</span>`
+            ).join('')}
+          </div>
+          <span class="rating-text">${rating} (${reviewsCount})</span>
+        </div>
         <p class="price" aria-label="Preço: ${formatCurrency(product.price)}">${formatCurrency(product.price)}</p>
-        <button class="primary-btn small" type="button" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">
-          Adicionar
-        </button>
+        <div class="product-actions">
+          <button class="primary-btn small" type="button" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">
+            Adicionar
+          </button>
+          <button class="ghost-btn small" onclick="openRatingModal(${product.id})" aria-label="Avaliar produto">
+            <span class="material-icon">rate_review</span>
+          </button>
+        </div>
       `;
       const addButton = card.querySelector(".primary-btn");
       addButton.addEventListener("click", () => addToCart(product));
@@ -420,6 +506,7 @@ updateSortButtonText();
 renderProducts(getVisibleProducts());
 loadCart();
 loadFavorites();
+loadRatings();
 
 // Abrir modal de favoritos
 elements.favoritesButton?.addEventListener("click", () => {
@@ -485,8 +572,91 @@ if (favoritesModalEl) {
   }
 }
 
+// Abrir modal de avaliação
+const openRatingModal = (productId) => {
+  const product = productData.find(p => p.id === productId);
+  if (!product) return;
+  
+  const modal = document.getElementById('ratingModal');
+  if (!modal) return;
+  
+  modal.dataset.productId = productId;
+  modal.querySelector('.rating-product-name').textContent = product.name;
+  modal.querySelector('.rating-product-image').src = product.image;
+  modal.classList.add('open');
+  
+  // Reset form
+  const form = modal.querySelector('#ratingForm');
+  if (form) form.reset();
+  modal.querySelectorAll('.star-input').forEach(star => star.classList.remove('selected'));
+};
+
+// Fechar modal de avaliação
+const closeRatingModal = () => {
+  const modal = document.getElementById('ratingModal');
+  if (modal) modal.classList.remove('open');
+};
+
+// Sistema de estrelas interativo
+const setupStarRating = () => {
+  const modal = document.getElementById('ratingModal');
+  if (!modal) return;
+  
+  const stars = modal.querySelectorAll('.star-input');
+  let selectedRating = 0;
+  
+  stars.forEach((star, index) => {
+    star.addEventListener('click', () => {
+      selectedRating = index + 1;
+      stars.forEach((s, i) => {
+        s.classList.toggle('selected', i < selectedRating);
+      });
+      document.getElementById('ratingValue').value = selectedRating;
+    });
+    
+    star.addEventListener('mouseenter', () => {
+      stars.forEach((s, i) => {
+        s.classList.toggle('hover', i <= index);
+      });
+    });
+  });
+  
+  modal.addEventListener('mouseleave', () => {
+    stars.forEach((s, i) => {
+      s.classList.remove('hover');
+      s.classList.toggle('selected', i < selectedRating);
+    });
+  });
+};
+
+// Formulário de avaliação
+document.addEventListener('DOMContentLoaded', () => {
+  const ratingForm = document.getElementById('ratingForm');
+  if (ratingForm) {
+    ratingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const modal = document.getElementById('ratingModal');
+      const productId = parseInt(modal.dataset.productId);
+      const rating = parseInt(document.getElementById('ratingValue').value);
+      const comment = document.getElementById('ratingComment').value;
+      
+      if (rating === 0) {
+        showToast('Por favor, selecione uma avaliação', 'error');
+        return;
+      }
+      
+      addRating(productId, rating, comment);
+      closeRatingModal();
+    });
+  }
+  
+  setupStarRating();
+});
+
 // Tornar funções globais
 window.toggleFavorite = toggleFavorite;
+window.openRatingModal = openRatingModal;
+window.closeRatingModal = closeRatingModal;
 
 // Sistema de busca
 elements.searchInput?.addEventListener("input", (e) => {
