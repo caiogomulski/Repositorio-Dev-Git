@@ -346,6 +346,7 @@ const updateViewedProductsUI = () => {
   
   if (viewedProducts.length === 0) {
     container.style.display = 'none';
+    updateDashboard();
     return;
   }
   
@@ -366,6 +367,7 @@ const updateViewedProductsUI = () => {
       </div>
     `;
   }).join('');
+  updateDashboard();
 };
 
 // Scroll para produto
@@ -474,6 +476,7 @@ const updateFavoritesUI = () => {
     elements.favoritesCount.style.display = count > 0 ? 'inline' : 'none';
   }
   renderFavoritesModal();
+  updateDashboard();
 };
 
 // Calcular total de itens no carrinho
@@ -712,6 +715,7 @@ const updateCartUI = () => {
     elements.cartCount.style.display = count > 0 ? 'inline' : 'none';
   }
   renderCartModal();
+  updateDashboard();
 };
 
 const showToast = (message, type = 'success') => {
@@ -809,6 +813,96 @@ document.getElementById("compareButton")?.addEventListener("click", () => {
     compareModal.classList.add("open");
   }
 });
+
+// Abrir dashboard
+document.getElementById("dashboardButton")?.addEventListener("click", () => {
+  const dashboardModal = document.getElementById("dashboardModal");
+  if (dashboardModal) {
+    renderDashboard();
+    dashboardModal.classList.add("open");
+  }
+});
+
+// Renderizar dashboard
+const renderDashboard = () => {
+  // Atualizar estatísticas
+  document.getElementById('statCartItems').textContent = getCartCount();
+  document.getElementById('statFavorites').textContent = favorites.length;
+  document.getElementById('statViewed').textContent = viewedProducts.length;
+  document.getElementById('statCompare').textContent = compareProducts.length;
+  
+  const totals = getCartTotal();
+  document.getElementById('statCartValue').textContent = formatCurrency(totals.total);
+  
+  // Top visualizados
+  const topViewed = viewedProducts.slice(0, 5);
+  const topViewedEl = document.getElementById('statTopViewed');
+  if (topViewedEl) {
+    if (topViewed.length === 0) {
+      topViewedEl.innerHTML = '<p class="dashboard-empty">Nenhum produto visualizado ainda</p>';
+    } else {
+      topViewedEl.innerHTML = topViewed.map(item => {
+        const product = productData.find(p => p.id === item.id);
+        if (!product) return '';
+        return `
+          <div class="dashboard-list-item">
+            <img src="${item.image}" alt="${item.name}" />
+            <div>
+              <h4>${item.name}</h4>
+              <p>${formatCurrency(item.price)}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+  
+  // Atividade recente
+  const activity = [];
+  if (cart.length > 0) {
+    activity.push({ type: 'cart', text: `${getCartCount()} item(s) no carrinho`, time: 'Agora' });
+  }
+  if (favorites.length > 0) {
+    activity.push({ type: 'favorite', text: `${favorites.length} produto(s) favoritado(s)`, time: 'Agora' });
+  }
+  if (viewedProducts.length > 0) {
+    activity.push({ type: 'view', text: `${viewedProducts.length} produto(s) visualizado(s)`, time: 'Hoje' });
+  }
+  
+  const activityEl = document.getElementById('statActivity');
+  if (activityEl) {
+    if (activity.length === 0) {
+      activityEl.innerHTML = '<p class="dashboard-empty">Nenhuma atividade recente</p>';
+    } else {
+      activityEl.innerHTML = activity.map(item => `
+        <div class="dashboard-activity-item">
+          <span class="material-icon activity-icon">${getActivityIcon(item.type)}</span>
+          <div>
+            <p>${item.text}</p>
+            <span class="activity-time">${item.time}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+};
+
+const getActivityIcon = (type) => {
+  const icons = {
+    cart: 'shopping_bag',
+    favorite: 'favorite',
+    view: 'visibility'
+  };
+  return icons[type] || 'circle';
+};
+
+// Atualizar dashboard quando necessário
+const updateDashboard = () => {
+  const dashboardButton = document.getElementById('dashboardButton');
+  if (dashboardButton && (cart.length > 0 || favorites.length > 0 || viewedProducts.length > 0)) {
+    dashboardButton.style.display = 'inline-flex';
+  }
+};
 
 // Renderizar modal de histórico
 const renderHistoryModal = () => {

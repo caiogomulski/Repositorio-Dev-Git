@@ -28,6 +28,9 @@
       </nav>
       <div class="header-actions">
         <button class="ghost-btn" id="loginBtn">Entrar</button>
+        <button class="ghost-btn" id="dashboardButton" title="Dashboard" style="display: none;">
+          <span class="material-icon">dashboard</span>
+        </button>
         <button class="ghost-btn" id="historyButton" title="Histórico">
           <span class="material-icon">history</span>
         </button>
@@ -234,6 +237,67 @@
       <button class="close-favorites" aria-label="Fechar">&times;</button>
       <h2>Meus Favoritos</h2>
       <div class="favorites-content"></div>
+    </div>
+  </div>
+  
+  <div class="dashboard-overlay" id="dashboardModal" aria-hidden="true">
+    <div class="dashboard-card">
+      <button class="close-dashboard" onclick="document.getElementById('dashboardModal').classList.remove('open')" aria-label="Fechar">&times;</button>
+      <h2>Meu Dashboard</h2>
+      <div class="dashboard-content">
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(124, 58, 237, 0.1); color: var(--primary);">
+              <span class="material-icon">shopping_bag</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statCartItems">0</h3>
+              <p>Itens no carrinho</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+              <span class="material-icon">favorite</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statFavorites">0</h3>
+              <p>Favoritos</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 163, 74, 0.1); color: var(--success);">
+              <span class="material-icon">history</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statViewed">0</h3>
+              <p>Visualizados</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+              <span class="material-icon">compare_arrows</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statCompare">0</h3>
+              <p>Em comparação</p>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-sections">
+          <div class="dashboard-section">
+            <h3>Valor total do carrinho</h3>
+            <p class="dashboard-value" id="statCartValue">R$ 0,00</p>
+          </div>
+          <div class="dashboard-section">
+            <h3>Produtos mais visualizados</h3>
+            <div class="dashboard-list" id="statTopViewed"></div>
+          </div>
+          <div class="dashboard-section">
+            <h3>Atividade recente</h3>
+            <div class="dashboard-activity" id="statActivity"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   
