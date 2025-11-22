@@ -31,6 +31,10 @@
         <button class="ghost-btn" id="historyButton" title="Histórico">
           <span class="material-icon">history</span>
         </button>
+        <button class="ghost-btn" id="compareButton" title="Comparar produtos">
+          <span class="material-icon">compare_arrows</span>
+          <span class="compare-count" id="compareCount">0</span>
+        </button>
         <button class="ghost-btn" id="favoritesButton" title="Favoritos">
           <span class="material-icon">favorite</span>
           <span class="favorites-count" id="favoritesCount">0</span>
@@ -230,6 +234,14 @@
       <button class="close-favorites" aria-label="Fechar">&times;</button>
       <h2>Meus Favoritos</h2>
       <div class="favorites-content"></div>
+    </div>
+  </div>
+  
+  <div class="compare-overlay" id="compareModal" aria-hidden="true">
+    <div class="compare-card">
+      <button class="close-compare" onclick="document.getElementById('compareModal').classList.remove('open')" aria-label="Fechar">&times;</button>
+      <h2>Comparar Produtos</h2>
+      <div class="compare-content"></div>
     </div>
   </div>
   

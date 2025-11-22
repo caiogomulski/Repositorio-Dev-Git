@@ -89,6 +89,7 @@ let cart = [];
 let favorites = [];
 let productRatings = {};
 let viewedProducts = [];
+let compareProducts = [];
 let toastTimeout = null;
 let showHomeOfficeOnly = false;
 let sortAscending = true;
@@ -156,6 +157,149 @@ const loadViewedProducts = () => {
   } catch (error) {
     console.error('Erro ao carregar histórico:', error);
     viewedProducts = [];
+  }
+};
+
+// Carregar produtos para comparação
+const loadCompareProducts = () => {
+  try {
+    const saved = localStorage.getItem('devstore_compare');
+    if (saved) {
+      compareProducts = JSON.parse(saved);
+      updateCompareUI();
+    }
+  } catch (error) {
+    console.error('Erro ao carregar comparação:', error);
+    compareProducts = [];
+  }
+};
+
+// Salvar produtos para comparação
+const saveCompareProducts = () => {
+  try {
+    localStorage.setItem('devstore_compare', JSON.stringify(compareProducts));
+  } catch (error) {
+    console.error('Erro ao salvar comparação:', error);
+  }
+};
+
+// Adicionar produto à comparação
+const addToCompare = (product) => {
+  if (compareProducts.length >= 3) {
+    showToast('Você pode comparar no máximo 3 produtos', 'error');
+    return;
+  }
+  
+  if (compareProducts.some(p => p.id === product.id)) {
+    showToast('Produto já está na comparação', 'error');
+    return;
+  }
+  
+  compareProducts.push(product);
+  saveCompareProducts();
+  updateCompareUI();
+  showToast(`${product.name} adicionado à comparação`);
+};
+
+// Remover produto da comparação
+const removeFromCompare = (productId) => {
+  compareProducts = compareProducts.filter(p => p.id !== productId);
+  saveCompareProducts();
+  updateCompareUI();
+  showToast('Produto removido da comparação');
+};
+
+// Atualizar UI de comparação
+const updateCompareUI = () => {
+  const compareBtn = document.getElementById('compareButton');
+  const compareCount = document.getElementById('compareCount');
+  
+  if (compareCount) {
+    compareCount.textContent = compareProducts.length;
+    compareCount.style.display = compareProducts.length > 0 ? 'inline' : 'none';
+  }
+  
+  if (compareBtn) {
+    compareBtn.disabled = compareProducts.length < 2;
+  }
+};
+
+// Renderizar modal de comparação
+const renderCompareModal = () => {
+  const modal = document.getElementById('compareModal');
+  if (!modal) return;
+  
+  const content = modal.querySelector('.compare-content');
+  if (!content) return;
+  
+  if (compareProducts.length < 2) {
+    content.innerHTML = `
+      <div class="compare-empty">
+        <p>Adicione pelo menos 2 produtos para comparar</p>
+      </div>
+    `;
+    return;
+  }
+  
+  const features = ['name', 'price', 'category', 'rating', 'description'];
+  
+  content.innerHTML = `
+    <div class="compare-table">
+      <div class="compare-row compare-header">
+        <div class="compare-cell">Característica</div>
+        ${compareProducts.map(p => `<div class="compare-cell">${p.name}</div>`).join('')}
+      </div>
+      ${features.map(feature => `
+        <div class="compare-row">
+          <div class="compare-cell compare-label">${getFeatureLabel(feature)}</div>
+          ${compareProducts.map(product => `
+            <div class="compare-cell">
+              ${getFeatureValue(product, feature)}
+            </div>
+          `).join('')}
+        </div>
+      `).join('')}
+      <div class="compare-row compare-actions">
+        <div class="compare-cell"></div>
+        ${compareProducts.map(product => `
+          <div class="compare-cell">
+            <button class="primary-btn small" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">Adicionar</button>
+            <button class="ghost-btn small" onclick="removeFromCompare(${product.id})">Remover</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+};
+
+const getFeatureLabel = (feature) => {
+  const labels = {
+    name: 'Nome',
+    price: 'Preço',
+    category: 'Categoria',
+    rating: 'Avaliação',
+    description: 'Descrição'
+  };
+  return labels[feature] || feature;
+};
+
+const getFeatureValue = (product, feature) => {
+  switch(feature) {
+    case 'price':
+      return formatCurrency(product.price);
+    case 'rating':
+      const rating = parseFloat(getProductRating(product.id));
+      return `${rating} ⭐ (${getProductReviewsCount(product.id)} avaliações)`;
+    case 'category':
+      const categories = {
+        'audio': 'Áudio',
+        'home-office': 'Home Office',
+        'hardware': 'Hardware',
+        'casa': 'Casa'
+      };
+      return categories[product.category] || product.category;
+    default:
+      return product[feature] || '-';
   }
 };
 
@@ -427,6 +571,9 @@ const renderProducts = (list) => {
           <button class="ghost-btn small" onclick="openRatingModal(${product.id})" aria-label="Avaliar produto">
             <span class="material-icon">rate_review</span>
           </button>
+          <button class="ghost-btn small" onclick="addToCompare(${JSON.stringify(product).replace(/"/g, '&quot;')})" aria-label="Comparar produto" title="Comparar">
+            <span class="material-icon">compare_arrows</span>
+          </button>
         </div>
       `;
     const addButton = card.querySelector(".primary-btn");
@@ -609,6 +756,7 @@ loadCart();
 loadFavorites();
 loadRatings();
 loadViewedProducts();
+loadCompareProducts();
 
 // Abrir modal de favoritos
 elements.favoritesButton?.addEventListener("click", () => {
@@ -624,6 +772,15 @@ document.getElementById("historyButton")?.addEventListener("click", () => {
   if (historyModal) {
     renderHistoryModal();
     historyModal.classList.add("open");
+  }
+});
+
+// Abrir modal de comparação
+document.getElementById("compareButton")?.addEventListener("click", () => {
+  const compareModal = document.getElementById("compareModal");
+  if (compareModal) {
+    renderCompareModal();
+    compareModal.classList.add("open");
   }
 });
 
@@ -825,6 +982,9 @@ document.addEventListener('DOMContentLoaded', () => {
 window.toggleFavorite = toggleFavorite;
 window.openRatingModal = openRatingModal;
 window.closeRatingModal = closeRatingModal;
+window.addToCompare = addToCompare;
+window.removeFromCompare = removeFromCompare;
+window.scrollToProduct = scrollToProduct;
 
 // Sistema de busca
 elements.searchInput?.addEventListener("input", (e) => {

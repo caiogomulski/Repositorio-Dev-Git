@@ -1297,6 +1297,132 @@ a:focus {
   50% { background: rgba(124, 58, 237, 0.1); }
 }
 
+.compare-count {
+  background: #fff;
+  color: var(--primary);
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.25rem;
+}
+
+.compare-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  padding: 2rem;
+}
+
+.compare-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.compare-card {
+  background: var(--card);
+  padding: 2.5rem;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+}
+
+.compare-overlay.open .compare-card {
+  transform: translateY(0);
+}
+
+.compare-card h2 {
+  margin: 0 0 1.5rem;
+  color: var(--text);
+}
+
+.close-compare {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.close-compare:hover {
+  color: var(--text);
+}
+
+.compare-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+}
+
+.compare-table {
+  display: grid;
+  grid-template-columns: 200px repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.compare-row {
+  display: contents;
+}
+
+.compare-cell {
+  background: var(--card);
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.compare-header .compare-cell {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.compare-label {
+  background: var(--bg);
+  font-weight: 600;
+  color: var(--text);
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.compare-actions .compare-cell {
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+}
+
+.compare-actions .compare-cell:first-child {
+  background: transparent;
+}
+
 @media (max-width: 768px) {
   .history-overlay {
     max-width: 100%;
@@ -1308,6 +1434,19 @@ a:focus {
   
   .viewed-item {
     min-width: 120px;
+  }
+  
+  .compare-overlay {
+    padding: 1rem;
+  }
+  
+  .compare-table {
+    grid-template-columns: 150px repeat(auto-fit, minmax(200px, 1fr));
+    font-size: 0.9rem;
+  }
+  
+  .compare-cell {
+    padding: 0.75rem;
   }
 }
 
