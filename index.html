@@ -25,7 +25,7 @@
         <a href="#contato">Contato</a>
       </nav>
       <div class="header-actions">
-        <button class="ghost-btn">Entrar</button>
+        <button class="ghost-btn" id="loginBtn">Entrar</button>
         <button class="primary-btn" id="cartButton">
           <span class="material-icon">shopping_bag</span>
           <span>Carrinho</span>
@@ -181,6 +181,53 @@
   <div class="toast" id="toast" role="status" aria-live="polite">
     <p>Item adicionado ao carrinho</p>
   </div>
+  <div class="auth-overlay" id="authModal" aria-hidden="true">
+  <div class="auth-card">
+    <button class="close-modal" id="closeModal" aria-label="Fechar">&times;</button>
+
+    <div id="loginFormWrapper">
+      <h2>Bem-vindo de volta!</h2>
+      <p class="lead-text">Acesse sua conta para continuar.</p>
+      <form class="auth-form" id="formLogin">
+        <div class="input-group">
+          <label for="emailLogin">E-mail</label>
+          <input type="email" id="emailLogin" placeholder="seu@email.com" required>
+        </div>
+        <div class="input-group">
+          <label for="senhaLogin">Senha</label>
+          <input type="password" id="senhaLogin" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="primary-btn full-width">Entrar</button>
+      </form>
+      <p class="auth-footer">
+        Não tem conta? <a href="#" id="showRegister">Crie agora</a>
+      </p>
+    </div>
+
+    <div id="registerFormWrapper" class="hidden">
+      <h2>Crie sua conta</h2>
+      <p class="lead-text">Junte-se à comunidade DevStore.</p>
+      <form class="auth-form" id="formRegister">
+        <div class="input-group">
+          <label for="nomeRegister">Nome completo</label>
+          <input type="text" id="nomeRegister" placeholder="Seu nome" required>
+        </div>
+        <div class="input-group">
+          <label for="emailRegister">E-mail</label>
+          <input type="email" id="emailRegister" placeholder="seu@email.com" required>
+        </div>
+        <div class="input-group">
+          <label for="senhaRegister">Senha</label>
+          <input type="password" id="senhaRegister" placeholder="Mínimo 8 caracteres" required>
+        </div>
+        <button type="submit" class="primary-btn full-width">Cadastrar</button>
+      </form>
+      <p class="auth-footer">
+        Já tem conta? <a href="#" id="showLogin">Entrar</a>
+      </p>
+    </div>
+  </div>
+</div>
 
   <script src="main.js"></script>
 </body>
