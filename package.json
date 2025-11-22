@@ -1,0 +1,16 @@
+{
+  "name": "devstore-ecommerce",
+  "version": "1.0.0",
+  "description": "E-commerce DevStore - Projeto de extensão Dev+Git",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

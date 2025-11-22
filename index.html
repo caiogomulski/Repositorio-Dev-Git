@@ -5,8 +5,9 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AchouTáAqui</title>
-  <meta name="description" content="E-commerce fictício de tecnologia" />
+  <title>AchouTáAqui - E-commerce de Tecnologia</title>
+  <meta name="description" content="E-commerce fictício de tecnologia - Produtos premium para seu setup" />
+  <meta name="theme-color" content="#7c3aed" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,17 +16,32 @@
 </head>
 
 <body>
+  <a href="#main-content" class="skip-link">Pular para conteúdo principal</a>
   <header class="site-header">
     <div class="container">
       <a class="logo" href="#">Achou<span>TáAqui</span></a>
-      <nav class="menu">
-        <a href="#produtos">Produtos</a>
-        <a href="#vantagens">Vantagens</a>
-        <a href="#depoimentos">Depoimentos</a>
-        <a href="#contato">Contato</a>
+      <nav class="menu" role="navigation" aria-label="Menu principal">
+        <a href="#produtos" aria-label="Ver produtos">Produtos</a>
+        <a href="#vantagens" aria-label="Ver vantagens">Vantagens</a>
+        <a href="#depoimentos" aria-label="Ver depoimentos">Depoimentos</a>
+        <a href="#contato" aria-label="Ver informações de contato">Contato</a>
       </nav>
       <div class="header-actions">
         <button class="ghost-btn" id="loginBtn">Entrar</button>
+        <button class="ghost-btn" id="dashboardButton" title="Dashboard" style="display: none;">
+          <span class="material-icon">dashboard</span>
+        </button>
+        <button class="ghost-btn" id="historyButton" title="Histórico">
+          <span class="material-icon">history</span>
+        </button>
+        <button class="ghost-btn" id="compareButton" title="Comparar produtos">
+          <span class="material-icon">compare_arrows</span>
+          <span class="compare-count" id="compareCount">0</span>
+        </button>
+        <button class="ghost-btn" id="favoritesButton" title="Favoritos">
+          <span class="material-icon">favorite</span>
+          <span class="favorites-count" id="favoritesCount">0</span>
+        </button>
         <button class="primary-btn" id="cartButton">
           <span class="material-icon">shopping_bag</span>
           <span>Carrinho</span>
@@ -35,7 +51,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <section class="hero" id="home">
       <div class="container hero__grid">
         <div class="hero__content">
@@ -110,7 +126,33 @@
             <button class="ghost-btn small" id="sortButton">Menor preço</button>
           </div>
         </header>
-        <div class="products__grid" id="productGrid" aria-live="polite"></div>
+        <div class="search-container">
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar produtos..." />
+          <span class="material-icon search-icon">search</span>
+        </div>
+        <div class="filter-categories" id="filterCategories">
+          <button class="category-filter active" data-category="all">Todos</button>
+          <button class="category-filter" data-category="audio">Áudio</button>
+          <button class="category-filter" data-category="home-office">Home Office</button>
+          <button class="category-filter" data-category="hardware">Hardware</button>
+          <button class="category-filter" data-category="casa">Casa</button>
+        </div>
+        <div class="viewed-products" id="viewedProducts" style="display: none;">
+          <div class="viewed-header">
+            <span class="material-icon">history</span>
+            <h3>Visualizados recentemente</h3>
+          </div>
+          <div class="viewed-list"></div>
+        </div>
+        <div class="products__grid" id="productGrid" aria-live="polite" role="region" aria-label="Lista de produtos"></div>
+        <div class="products-loading" id="productsLoading" style="display: none;" aria-hidden="true">
+          <div class="loading-spinner"></div>
+          <p>Carregando produtos...</p>
+        </div>
+        <div class="products-empty" id="productsEmpty" style="display: none;" aria-live="polite">
+          <p>Nenhum produto encontrado com os filtros selecionados.</p>
+          <button class="ghost-btn" onclick="clearFilters()">Limpar filtros</button>
+        </div>
       </div>
     </section>
 
@@ -181,6 +223,126 @@
   <div class="toast" id="toast" role="status" aria-live="polite">
     <p>Item adicionado ao carrinho</p>
   </div>
+  
+  <div class="cart-overlay" id="cartModal" aria-hidden="true">
+    <div class="cart-card">
+      <button class="close-cart" aria-label="Fechar">&times;</button>
+      <h2>Seu Carrinho</h2>
+      <div class="cart-content"></div>
+    </div>
+  </div>
+  
+  <div class="favorites-overlay" id="favoritesModal" aria-hidden="true">
+    <div class="favorites-card">
+      <button class="close-favorites" aria-label="Fechar">&times;</button>
+      <h2>Meus Favoritos</h2>
+      <div class="favorites-content"></div>
+    </div>
+  </div>
+  
+  <div class="dashboard-overlay" id="dashboardModal" aria-hidden="true">
+    <div class="dashboard-card">
+      <button class="close-dashboard" onclick="document.getElementById('dashboardModal').classList.remove('open')" aria-label="Fechar">&times;</button>
+      <h2>Meu Dashboard</h2>
+      <div class="dashboard-content">
+        <div class="dashboard-stats">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(124, 58, 237, 0.1); color: var(--primary);">
+              <span class="material-icon">shopping_bag</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statCartItems">0</h3>
+              <p>Itens no carrinho</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+              <span class="material-icon">favorite</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statFavorites">0</h3>
+              <p>Favoritos</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 163, 74, 0.1); color: var(--success);">
+              <span class="material-icon">history</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statViewed">0</h3>
+              <p>Visualizados</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+              <span class="material-icon">compare_arrows</span>
+            </div>
+            <div class="stat-info">
+              <h3 id="statCompare">0</h3>
+              <p>Em comparação</p>
+            </div>
+          </div>
+        </div>
+        <div class="dashboard-sections">
+          <div class="dashboard-section">
+            <h3>Valor total do carrinho</h3>
+            <p class="dashboard-value" id="statCartValue">R$ 0,00</p>
+          </div>
+          <div class="dashboard-section">
+            <h3>Produtos mais visualizados</h3>
+            <div class="dashboard-list" id="statTopViewed"></div>
+          </div>
+          <div class="dashboard-section">
+            <h3>Atividade recente</h3>
+            <div class="dashboard-activity" id="statActivity"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="compare-overlay" id="compareModal" aria-hidden="true">
+    <div class="compare-card">
+      <button class="close-compare" onclick="document.getElementById('compareModal').classList.remove('open')" aria-label="Fechar">&times;</button>
+      <h2>Comparar Produtos</h2>
+      <div class="compare-content"></div>
+    </div>
+  </div>
+  
+  <div class="history-overlay" id="historyModal" aria-hidden="true">
+    <div class="history-card">
+      <button class="close-history" onclick="document.getElementById('historyModal').classList.remove('open')" aria-label="Fechar">&times;</button>
+      <h2>Histórico de Visualizações</h2>
+      <div class="history-content"></div>
+    </div>
+  </div>
+  
+  <div class="rating-overlay" id="ratingModal" aria-hidden="true">
+    <div class="rating-card">
+      <button class="close-rating" onclick="closeRatingModal()" aria-label="Fechar">&times;</button>
+      <div class="rating-header">
+        <img class="rating-product-image" src="" alt="" />
+        <h2>Avaliar produto</h2>
+        <p class="rating-product-name"></p>
+      </div>
+      <form id="ratingForm" class="rating-form">
+        <input type="hidden" id="ratingValue" value="0" required>
+        <div class="star-rating">
+          <button type="button" class="star-input" data-rating="1">★</button>
+          <button type="button" class="star-input" data-rating="2">★</button>
+          <button type="button" class="star-input" data-rating="3">★</button>
+          <button type="button" class="star-input" data-rating="4">★</button>
+          <button type="button" class="star-input" data-rating="5">★</button>
+        </div>
+        <div class="input-group">
+          <label for="ratingComment">Comentário (opcional)</label>
+          <textarea id="ratingComment" rows="4" placeholder="Compartilhe sua experiência com este produto..."></textarea>
+        </div>
+        <button type="submit" class="primary-btn full-width">Enviar avaliação</button>
+      </form>
+    </div>
+  </div>
+  
   <div class="auth-overlay" id="authModal" aria-hidden="true">
   <div class="auth-card">
     <button class="close-modal" id="closeModal" aria-label="Fechar">&times;</button>
@@ -192,12 +354,24 @@
         <div class="input-group">
           <label for="emailLogin">E-mail</label>
           <input type="email" id="emailLogin" placeholder="seu@email.com" required>
+          <span class="input-error" id="emailLoginError"></span>
         </div>
         <div class="input-group">
           <label for="senhaLogin">Senha</label>
           <input type="password" id="senhaLogin" placeholder="••••••••" required>
+          <span class="input-error" id="senhaLoginError"></span>
         </div>
-        <button type="submit" class="primary-btn full-width">Entrar</button>
+        <div class="auth-options">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe">
+            <span>Lembrar-me</span>
+          </label>
+          <a href="#" id="forgotPassword" class="forgot-link">Esqueci minha senha</a>
+        </div>
+        <button type="submit" class="primary-btn full-width" id="loginSubmitBtn">
+          <span class="btn-text">Entrar</span>
+          <span class="btn-loader" style="display: none;">Carregando...</span>
+        </button>
       </form>
       <p class="auth-footer">
         Não tem conta? <a href="#" id="showRegister">Crie agora</a>
@@ -210,20 +384,48 @@
       <form class="auth-form" id="formRegister">
         <div class="input-group">
           <label for="nomeRegister">Nome completo</label>
-          <input type="text" id="nomeRegister" placeholder="Seu nome" required>
+          <input type="text" id="nomeRegister" placeholder="Seu nome" required minlength="3">
+          <span class="input-error" id="nomeRegisterError"></span>
         </div>
         <div class="input-group">
           <label for="emailRegister">E-mail</label>
           <input type="email" id="emailRegister" placeholder="seu@email.com" required>
+          <span class="input-error" id="emailRegisterError"></span>
         </div>
         <div class="input-group">
           <label for="senhaRegister">Senha</label>
-          <input type="password" id="senhaRegister" placeholder="Mínimo 8 caracteres" required>
+          <input type="password" id="senhaRegister" placeholder="Mínimo 8 caracteres" required minlength="8">
+          <span class="input-error" id="senhaRegisterError"></span>
+          <div class="password-strength" id="passwordStrength"></div>
         </div>
-        <button type="submit" class="primary-btn full-width">Cadastrar</button>
+        <div class="input-group">
+          <label for="senhaConfirmRegister">Confirmar senha</label>
+          <input type="password" id="senhaConfirmRegister" placeholder="Digite a senha novamente" required>
+          <span class="input-error" id="senhaConfirmRegisterError"></span>
+        </div>
+        <button type="submit" class="primary-btn full-width" id="registerSubmitBtn">
+          <span class="btn-text">Cadastrar</span>
+          <span class="btn-loader" style="display: none;">Carregando...</span>
+        </button>
       </form>
       <p class="auth-footer">
         Já tem conta? <a href="#" id="showLogin">Entrar</a>
+      </p>
+    </div>
+    
+    <div id="forgotPasswordWrapper" class="hidden">
+      <h2>Recuperar senha</h2>
+      <p class="lead-text">Digite seu e-mail para receber o link de recuperação.</p>
+      <form class="auth-form" id="formForgotPassword">
+        <div class="input-group">
+          <label for="emailForgot">E-mail</label>
+          <input type="email" id="emailForgot" placeholder="seu@email.com" required>
+          <span class="input-error" id="emailForgotError"></span>
+        </div>
+        <button type="submit" class="primary-btn full-width">Enviar link</button>
+      </form>
+      <p class="auth-footer">
+        <a href="#" id="backToLogin">Voltar para login</a>
       </p>
     </div>
   </div>
