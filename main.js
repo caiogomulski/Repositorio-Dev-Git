@@ -67,12 +67,16 @@ const elements = {
   newsletterButton: document.getElementById("newsletterButton"),
   newsletterEmail: document.getElementById("newsletterEmail"),
   currentYear: document.getElementById("currentYear"),
+  searchInput: document.getElementById("searchInput"),
+  filterCategories: document.getElementById("filterCategories"),
 };
 
 let cart = [];
 let toastTimeout = null;
 let showHomeOfficeOnly = false;
 let sortAscending = true;
+let searchQuery = '';
+let selectedCategory = 'all';
 
 // Carregar carrinho do localStorage
 const loadCart = () => {
@@ -114,9 +118,27 @@ const formatCurrency = (value) =>
   }).format(value);
 
 const getVisibleProducts = () => {
-  const list = showHomeOfficeOnly
-    ? productData.filter((product) => product.category === "home-office")
-    : [...productData];
+  let list = [...productData];
+  
+  // Filtro por categoria
+  if (selectedCategory !== 'all') {
+    list = list.filter((product) => product.category === selectedCategory);
+  }
+  
+  // Filtro antigo (home-office only) - mantido para compatibilidade
+  if (showHomeOfficeOnly) {
+    list = list.filter((product) => product.category === "home-office");
+  }
+  
+  // Filtro por busca
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    list = list.filter((product) => 
+      product.name.toLowerCase().includes(query) ||
+      product.description.toLowerCase().includes(query) ||
+      product.badge.toLowerCase().includes(query)
+    );
+  }
 
   return list.sort((a, b) => (sortAscending ? a.price - b.price : b.price - a.price));
 };
@@ -263,6 +285,28 @@ if (elements.currentYear) {
 updateSortButtonText();
 renderProducts(getVisibleProducts());
 loadCart();
+
+// Sistema de busca
+elements.searchInput?.addEventListener("input", (e) => {
+  searchQuery = e.target.value;
+  applyProductView();
+});
+
+// Filtros por categoria
+if (elements.filterCategories) {
+  elements.filterCategories.addEventListener("click", (e) => {
+    if (e.target.classList.contains("category-filter")) {
+      // Remove active de todos
+      elements.filterCategories.querySelectorAll(".category-filter").forEach(btn => {
+        btn.classList.remove("active");
+      });
+      // Adiciona active no clicado
+      e.target.classList.add("active");
+      selectedCategory = e.target.dataset.category;
+      applyProductView();
+    }
+  });
+}
 
 const authElements = {
   modal: document.getElementById("authModal"),

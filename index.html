@@ -110,6 +110,17 @@
             <button class="ghost-btn small" id="sortButton">Menor preço</button>
           </div>
         </header>
+        <div class="search-container">
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar produtos..." />
+          <span class="material-icon search-icon">search</span>
+        </div>
+        <div class="filter-categories" id="filterCategories">
+          <button class="category-filter active" data-category="all">Todos</button>
+          <button class="category-filter" data-category="audio">Áudio</button>
+          <button class="category-filter" data-category="home-office">Home Office</button>
+          <button class="category-filter" data-category="hardware">Hardware</button>
+          <button class="category-filter" data-category="casa">Casa</button>
+        </div>
         <div class="products__grid" id="productGrid" aria-live="polite"></div>
       </div>
     </section>
