@@ -181,3 +181,35 @@ if (elements.currentYear) {
 
 updateSortButtonText();
 renderProducts(getVisibleProducts());
+
+const authElements = {
+  modal: document.getElementById("authModal"),
+  loginBtn: document.getElementById("loginBtn"),
+  closeBtn: document.getElementById("closeModal"),
+  loginFormWrapper: document.getElementById("loginFormWrapper"),
+  registerFormWrapper: document.getElementById("registerFormWrapper"),
+  showRegisterBtn: document.getElementById("showRegister"),
+  showLoginBtn: document.getElementById("showLogin"),
+};
+
+authElements.loginBtn?.addEventListener("click", () => {
+  authElements.modal.classList.add("open");
+});
+
+const closeModal = () => {
+  authElements.modal.classList.remove("open");
+};
+
+authElements.closeBtn?.addEventListener("click", closeModal);
+
+authElements.modal?.addEventListener("click", (e) => {
+  if (e.target === authElements.modal) {
+    closeModal();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && authElements.modal.classList.contains("open")) {
+    closeModal();
+  }
+});
