@@ -90,6 +90,13 @@ let favorites = [];
 let productRatings = {};
 let viewedProducts = [];
 let compareProducts = [];
+let activeCoupon = null;
+let availableCoupons = [
+  { code: 'BEMVINDO10', discount: 10, type: 'percent', minValue: 100, description: '10% de desconto na primeira compra' },
+  { code: 'FRETEGRATIS', discount: 299, type: 'fixed', minValue: 299, description: 'Frete grátis em compras acima de R$299' },
+  { code: 'TECNO20', discount: 20, type: 'percent', minValue: 500, description: '20% de desconto em produtos de tecnologia' },
+  { code: 'BLACK50', discount: 50, type: 'fixed', minValue: 1000, description: 'R$50 de desconto em compras acima de R$1000' }
+];
 let toastTimeout = null;
 let showHomeOfficeOnly = false;
 let sortAscending = true;
@@ -476,7 +483,25 @@ const getCartCount = () => {
 
 // Calcular total do carrinho
 const getCartTotal = () => {
-  return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  let discount = 0;
+  
+  if (activeCoupon) {
+    const coupon = availableCoupons.find(c => c.code === activeCoupon);
+    if (coupon && subtotal >= coupon.minValue) {
+      if (coupon.type === 'percent') {
+        discount = (subtotal * coupon.discount) / 100;
+      } else {
+        discount = coupon.discount;
+      }
+    }
+  }
+  
+  return {
+    subtotal,
+    discount,
+    total: Math.max(0, subtotal - discount)
+  };
 };
 
 const formatCurrency = (value) =>
@@ -757,6 +782,7 @@ loadFavorites();
 loadRatings();
 loadViewedProducts();
 loadCompareProducts();
+loadCoupon();
 
 // Abrir modal de favoritos
 elements.favoritesButton?.addEventListener("click", () => {
@@ -978,6 +1004,51 @@ document.addEventListener('DOMContentLoaded', () => {
   setupStarRating();
 });
 
+// Aplicar cupom
+const applyCoupon = () => {
+  const codeInput = document.getElementById('couponCode');
+  if (!codeInput) return;
+  
+  const code = codeInput.value.toUpperCase().trim();
+  const coupon = availableCoupons.find(c => c.code === code);
+  
+  if (!coupon) {
+    showToast('Cupom inválido', 'error');
+    return;
+  }
+  
+  const totals = getCartTotal();
+  if (totals.subtotal < coupon.minValue) {
+    showToast(`Valor mínimo de ${formatCurrency(coupon.minValue)} para este cupom`, 'error');
+    return;
+  }
+  
+  activeCoupon = code;
+  localStorage.setItem('devstore_coupon', activeCoupon);
+  updateCartUI();
+  showToast(`Cupom ${code} aplicado com sucesso!`);
+};
+
+// Remover cupom
+const removeCoupon = () => {
+  activeCoupon = null;
+  localStorage.removeItem('devstore_coupon');
+  updateCartUI();
+  showToast('Cupom removido');
+};
+
+// Carregar cupom salvo
+const loadCoupon = () => {
+  try {
+    const saved = localStorage.getItem('devstore_coupon');
+    if (saved) {
+      activeCoupon = saved;
+    }
+  } catch (error) {
+    console.error('Erro ao carregar cupom:', error);
+  }
+};
+
 // Tornar funções globais
 window.toggleFavorite = toggleFavorite;
 window.openRatingModal = openRatingModal;
@@ -985,6 +1056,8 @@ window.closeRatingModal = closeRatingModal;
 window.addToCompare = addToCompare;
 window.removeFromCompare = removeFromCompare;
 window.scrollToProduct = scrollToProduct;
+window.applyCoupon = applyCoupon;
+window.removeCoupon = removeCoupon;
 
 // Sistema de busca
 elements.searchInput?.addEventListener("input", (e) => {
@@ -1268,7 +1341,7 @@ const renderCartModal = () => {
     return;
   }
   
-  const total = getCartTotal();
+  const totals = getCartTotal();
   cartContent.innerHTML = `
     <div class="cart-items">
       ${cart.map(item => `
@@ -1290,9 +1363,36 @@ const renderCartModal = () => {
         </div>
       `).join('')}
     </div>
+    <div class="cart-coupon">
+      ${activeCoupon ? `
+        <div class="coupon-applied">
+          <span class="material-icon">local_offer</span>
+          <span>Cupom ${activeCoupon} aplicado</span>
+          <button class="remove-coupon-btn" onclick="removeCoupon()">×</button>
+        </div>
+      ` : `
+        <div class="coupon-input-group">
+          <input type="text" id="couponCode" placeholder="Código do cupom" />
+          <button class="ghost-btn small" onclick="applyCoupon()">Aplicar</button>
+        </div>
+      `}
+    </div>
     <div class="cart-footer">
-      <div class="cart-total">
-        <strong>Total: ${formatCurrency(total)}</strong>
+      <div class="cart-summary">
+        <div class="cart-summary-row">
+          <span>Subtotal:</span>
+          <span>${formatCurrency(totals.subtotal)}</span>
+        </div>
+        ${totals.discount > 0 ? `
+          <div class="cart-summary-row discount">
+            <span>Desconto:</span>
+            <span>-${formatCurrency(totals.discount)}</span>
+          </div>
+        ` : ''}
+        <div class="cart-summary-row total">
+          <strong>Total:</strong>
+          <strong>${formatCurrency(totals.total)}</strong>
+        </div>
       </div>
       <button class="primary-btn full-width">Finalizar compra</button>
       <button class="ghost-btn full-width" onclick="document.getElementById('cartModal').classList.remove('open')">Continuar comprando</button>
