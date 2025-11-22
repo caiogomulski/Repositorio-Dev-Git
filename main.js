@@ -209,36 +209,97 @@ const getVisibleProducts = () => {
 
 const renderProducts = (list) => {
   if (!elements.productGrid) return;
-  elements.productGrid.innerHTML = "";
+  
+  const loadingEl = document.getElementById('productsLoading');
+  const emptyEl = document.getElementById('productsEmpty');
+  
+  // Mostrar loading
+  if (loadingEl) loadingEl.style.display = 'flex';
+  if (emptyEl) emptyEl.style.display = 'none';
+  elements.productGrid.style.opacity = '0.5';
+  
+  setTimeout(() => {
+    elements.productGrid.innerHTML = "";
+    
+    if (list.length === 0) {
+      if (loadingEl) loadingEl.style.display = 'none';
+      if (emptyEl) emptyEl.style.display = 'block';
+      elements.productGrid.style.opacity = '1';
+      return;
+    }
+    
+    if (emptyEl) emptyEl.style.display = 'none';
+    const fragment = document.createDocumentFragment();
 
-  const fragment = document.createDocumentFragment();
+    list.forEach((product, index) => {
+      const card = document.createElement("article");
+      card.className = "product-card";
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(20px)';
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'article');
+      card.setAttribute('aria-label', `Produto: ${product.name}`);
+      const isFav = isFavorite(product.id);
+      card.innerHTML = `
+        <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${product.id}" aria-label="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" tabindex="0">
+          <span class="material-icon">${isFav ? 'favorite' : 'favorite_border'}</span>
+        </button>
+        <img src="${product.image}" alt="${product.name}" loading="lazy" />
+        <span class="badge">${product.badge}</span>
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        <p class="price" aria-label="Preço: ${formatCurrency(product.price)}">${formatCurrency(product.price)}</p>
+        <button class="primary-btn small" type="button" data-id="${product.id}" aria-label="Adicionar ${product.name} ao carrinho">
+          Adicionar
+        </button>
+      `;
+      const addButton = card.querySelector(".primary-btn");
+      addButton.addEventListener("click", () => addToCart(product));
+      addButton.addEventListener("keydown", (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          addToCart(product);
+        }
+      });
+      const favButton = card.querySelector(".favorite-btn");
+      favButton.addEventListener("click", () => toggleFavorite(product));
+      favButton.addEventListener("keydown", (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleFavorite(product);
+        }
+      });
+      fragment.appendChild(card);
+      
+      // Animação de entrada
+      setTimeout(() => {
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+      }, index * 50);
+    });
 
-  list.forEach((product) => {
-    const card = document.createElement("article");
-    card.className = "product-card";
-    const isFav = isFavorite(product.id);
-    card.innerHTML = `
-      <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${product.id}" aria-label="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">
-        <span class="material-icon">${isFav ? 'favorite' : 'favorite_border'}</span>
-      </button>
-      <img src="${product.image}" alt="${product.name}" loading="lazy" />
-      <span class="badge">${product.badge}</span>
-      <h3>${product.name}</h3>
-      <p>${product.description}</p>
-      <p class="price">${formatCurrency(product.price)}</p>
-      <button class="primary-btn small" type="button" data-id="${product.id}">
-        Adicionar
-      </button>
-    `;
-    const addButton = card.querySelector(".primary-btn");
-    addButton.addEventListener("click", () => addToCart(product));
-    const favButton = card.querySelector(".favorite-btn");
-    favButton.addEventListener("click", () => toggleFavorite(product));
-    fragment.appendChild(card);
-  });
-
-  elements.productGrid.appendChild(fragment);
+    elements.productGrid.appendChild(fragment);
+    if (loadingEl) loadingEl.style.display = 'none';
+    elements.productGrid.style.opacity = '1';
+  }, 300);
 };
+
+// Limpar filtros
+const clearFilters = () => {
+  searchQuery = '';
+  selectedCategory = 'all';
+  showHomeOfficeOnly = false;
+  if (elements.searchInput) elements.searchInput.value = '';
+  if (elements.filterCategories) {
+    elements.filterCategories.querySelectorAll('.category-filter').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.dataset.category === 'all') btn.classList.add('active');
+    });
+  }
+  applyProductView();
+};
+window.clearFilters = clearFilters;
 
 const addToCart = (product) => {
   const existingItem = cart.find(item => item.id === product.id);
@@ -294,15 +355,18 @@ const updateCartUI = () => {
   renderCartModal();
 };
 
-const showToast = (message) => {
+const showToast = (message, type = 'success') => {
   if (!elements.toast) return;
   elements.toast.textContent = message;
+  elements.toast.className = `toast ${type}`;
   elements.toast.classList.add("show");
+  elements.toast.setAttribute('role', 'alert');
+  elements.toast.setAttribute('aria-live', 'assertive');
 
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => {
     elements.toast.classList.remove("show");
-  }, 2500);
+  }, 3000);
 };
 
 const updateSortButtonText = () => {
