@@ -779,15 +779,6 @@ if (elements.currentYear) {
   elements.currentYear.textContent = new Date().getFullYear();
 }
 
-updateSortButtonText();
-renderProducts(getVisibleProducts());
-loadCart();
-loadFavorites();
-loadRatings();
-loadViewedProducts();
-loadCompareProducts();
-loadCoupon();
-
 // Abrir modal de favoritos
 elements.favoritesButton?.addEventListener("click", () => {
   const favoritesModal = document.getElementById("favoritesModal");
@@ -1510,3 +1501,12 @@ if (cartModal) {
     });
   }
 }
+
+updateSortButtonText();
+renderProducts(getVisibleProducts());
+loadCart();
+loadFavorites();
+loadRatings();
+loadViewedProducts();
+loadCompareProducts();
+loadCoupon();
