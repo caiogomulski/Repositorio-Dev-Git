@@ -314,8 +314,11 @@ const authElements = {
   closeBtn: document.getElementById("closeModal"),
   loginFormWrapper: document.getElementById("loginFormWrapper"),
   registerFormWrapper: document.getElementById("registerFormWrapper"),
+  forgotPasswordWrapper: document.getElementById("forgotPasswordWrapper"),
   showRegisterBtn: document.getElementById("showRegister"),
   showLoginBtn: document.getElementById("showLogin"),
+  forgotPasswordBtn: document.getElementById("forgotPassword"),
+  backToLoginBtn: document.getElementById("backToLogin"),
 };
 
 authElements.loginBtn?.addEventListener("click", () => {
@@ -352,16 +355,199 @@ authElements.showLoginBtn?.addEventListener("click", (e) => {
   authElements.loginFormWrapper.classList.remove("hidden");
 });
 
+// Validação de e-mail
+const validateEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
+
+// Validação de senha
+const validatePassword = (password) => {
+  return password.length >= 8;
+};
+
+// Mostrar erro de input
+const showInputError = (inputId, message) => {
+  const errorElement = document.getElementById(inputId + 'Error');
+  const input = document.getElementById(inputId);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = message ? 'block' : 'none';
+  }
+  if (input) {
+    input.classList.toggle('error', !!message);
+  }
+};
+
+// Limpar erros
+const clearErrors = (formId) => {
+  const form = document.getElementById(formId);
+  if (form) {
+    form.querySelectorAll('.input-error').forEach(el => {
+      el.textContent = '';
+      el.style.display = 'none';
+    });
+    form.querySelectorAll('input').forEach(el => {
+      el.classList.remove('error');
+    });
+  }
+};
+
+// Indicador de força da senha
+const updatePasswordStrength = (password) => {
+  const strengthElement = document.getElementById('passwordStrength');
+  if (!strengthElement) return;
+  
+  let strength = 0;
+  let text = '';
+  let color = '';
+  
+  if (password.length >= 8) strength++;
+  if (password.length >= 12) strength++;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+  if (/\d/.test(password)) strength++;
+  if (/[^a-zA-Z\d]/.test(password)) strength++;
+  
+  if (strength <= 2) {
+    text = 'Senha fraca';
+    color = '#ef4444';
+  } else if (strength <= 3) {
+    text = 'Senha média';
+    color = '#f59e0b';
+  } else {
+    text = 'Senha forte';
+    color = '#16a34a';
+  }
+  
+  strengthElement.textContent = password ? text : '';
+  strengthElement.style.color = color;
+};
+
+// Formulário de login
 document.getElementById("formLogin")?.addEventListener("submit", (e) => {
   e.preventDefault();
-  closeModal();
-  showToast("Login realizado com sucesso!");
+  clearErrors('formLogin');
+  
+  const email = document.getElementById("emailLogin").value;
+  const password = document.getElementById("senhaLogin").value;
+  let isValid = true;
+  
+  if (!validateEmail(email)) {
+    showInputError('emailLogin', 'E-mail inválido');
+    isValid = false;
+  }
+  
+  if (!password) {
+    showInputError('senhaLogin', 'Senha é obrigatória');
+    isValid = false;
+  }
+  
+  if (!isValid) return;
+  
+  const submitBtn = document.getElementById('loginSubmitBtn');
+  const btnText = submitBtn?.querySelector('.btn-text');
+  const btnLoader = submitBtn?.querySelector('.btn-loader');
+  
+  if (btnText) btnText.style.display = 'none';
+  if (btnLoader) btnLoader.style.display = 'inline';
+  if (submitBtn) submitBtn.disabled = true;
+  
+  // Simular requisição
+  setTimeout(() => {
+    closeModal();
+    showToast("Login realizado com sucesso!");
+    if (btnText) btnText.style.display = 'inline';
+    if (btnLoader) btnLoader.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = false;
+  }, 1500);
 });
 
+// Formulário de registro
 document.getElementById("formRegister")?.addEventListener("submit", (e) => {
   e.preventDefault();
-  closeModal();
-  showToast("Conta criada! Bem-vindo(a).");
+  clearErrors('formRegister');
+  
+  const nome = document.getElementById("nomeRegister").value;
+  const email = document.getElementById("emailRegister").value;
+  const password = document.getElementById("senhaRegister").value;
+  const passwordConfirm = document.getElementById("senhaConfirmRegister").value;
+  let isValid = true;
+  
+  if (nome.length < 3) {
+    showInputError('nomeRegister', 'Nome deve ter pelo menos 3 caracteres');
+    isValid = false;
+  }
+  
+  if (!validateEmail(email)) {
+    showInputError('emailRegister', 'E-mail inválido');
+    isValid = false;
+  }
+  
+  if (!validatePassword(password)) {
+    showInputError('senhaRegister', 'Senha deve ter pelo menos 8 caracteres');
+    isValid = false;
+  }
+  
+  if (password !== passwordConfirm) {
+    showInputError('senhaConfirmRegister', 'As senhas não coincidem');
+    isValid = false;
+  }
+  
+  if (!isValid) return;
+  
+  const submitBtn = document.getElementById('registerSubmitBtn');
+  const btnText = submitBtn?.querySelector('.btn-text');
+  const btnLoader = submitBtn?.querySelector('.btn-loader');
+  
+  if (btnText) btnText.style.display = 'none';
+  if (btnLoader) btnLoader.style.display = 'inline';
+  if (submitBtn) submitBtn.disabled = true;
+  
+  // Simular requisição
+  setTimeout(() => {
+    closeModal();
+    showToast("Conta criada! Bem-vindo(a).");
+    if (btnText) btnText.style.display = 'inline';
+    if (btnLoader) btnLoader.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = false;
+  }, 1500);
+});
+
+// Formulário de recuperação de senha
+document.getElementById("formForgotPassword")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  clearErrors('formForgotPassword');
+  
+  const email = document.getElementById("emailForgot").value;
+  
+  if (!validateEmail(email)) {
+    showInputError('emailForgot', 'E-mail inválido');
+    return;
+  }
+  
+  showToast("Link de recuperação enviado para seu e-mail!");
+  setTimeout(() => {
+    authElements.forgotPasswordWrapper.classList.add("hidden");
+    authElements.loginFormWrapper.classList.remove("hidden");
+  }, 2000);
+});
+
+// Monitorar força da senha
+document.getElementById("senhaRegister")?.addEventListener("input", (e) => {
+  updatePasswordStrength(e.target.value);
+});
+
+// Navegação entre formulários
+authElements.forgotPasswordBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  authElements.loginFormWrapper.classList.add("hidden");
+  authElements.forgotPasswordWrapper.classList.remove("hidden");
+});
+
+authElements.backToLoginBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  authElements.forgotPasswordWrapper.classList.add("hidden");
+  authElements.loginFormWrapper.classList.remove("hidden");
 });
 
 // Renderizar modal do carrinho
