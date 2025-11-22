@@ -23,7 +23,7 @@ const productData = [
   },
   {
     id: 3,
-    name: "Notebook Lume 14"",
+    name: 'Notebook Lume 14"', // CORRIGIDO: Usei aspas simples por fora
     description: "Processador de última geração e corpo ultrafino.",
     price: 4399.0,
     badge: "Mais vendido",
@@ -56,7 +56,7 @@ const productData = [
   },
   {
     id: 6,
-    name: "Monitor Edge 27" 4K",
+    name: 'Monitor Edge 27" 4K', // CORRIGIDO: Usei aspas simples por fora
     description: "Painel IPS calibrado e 99% sRGB.",
     price: 2499.9,
     badge: "Pro",
