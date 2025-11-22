@@ -213,3 +213,27 @@ document.addEventListener("keydown", (e) => {
     closeModal();
   }
 });
+
+authElements.showRegisterBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  authElements.loginFormWrapper.classList.add("hidden");
+  authElements.registerFormWrapper.classList.remove("hidden");
+});
+
+authElements.showLoginBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  authElements.registerFormWrapper.classList.add("hidden");
+  authElements.loginFormWrapper.classList.remove("hidden");
+});
+
+document.getElementById("formLogin")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  closeModal();
+  showToast("Login realizado com sucesso!");
+});
+
+document.getElementById("formRegister")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  closeModal();
+  showToast("Conta criada! Bem-vindo(a).");
+});
