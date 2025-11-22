@@ -26,6 +26,10 @@
       </nav>
       <div class="header-actions">
         <button class="ghost-btn" id="loginBtn">Entrar</button>
+        <button class="ghost-btn" id="favoritesButton" title="Favoritos">
+          <span class="material-icon">favorite</span>
+          <span class="favorites-count" id="favoritesCount">0</span>
+        </button>
         <button class="primary-btn" id="cartButton">
           <span class="material-icon">shopping_bag</span>
           <span>Carrinho</span>
@@ -198,6 +202,14 @@
       <button class="close-cart" aria-label="Fechar">&times;</button>
       <h2>Seu Carrinho</h2>
       <div class="cart-content"></div>
+    </div>
+  </div>
+  
+  <div class="favorites-overlay" id="favoritesModal" aria-hidden="true">
+    <div class="favorites-card">
+      <button class="close-favorites" aria-label="Fechar">&times;</button>
+      <h2>Meus Favoritos</h2>
+      <div class="favorites-content"></div>
     </div>
   </div>
   

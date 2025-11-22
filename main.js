@@ -59,6 +59,8 @@ const elements = {
   productGrid: document.getElementById("productGrid"),
   cartCount: document.getElementById("cartCount"),
   cartButton: document.getElementById("cartButton"),
+  favoritesButton: document.getElementById("favoritesButton"),
+  favoritesCount: document.getElementById("favoritesCount"),
   toast: document.getElementById("toast"),
   filterButton: document.getElementById("filterButton"),
   sortButton: document.getElementById("sortButton"),
@@ -72,6 +74,7 @@ const elements = {
 };
 
 let cart = [];
+let favorites = [];
 let toastTimeout = null;
 let showHomeOfficeOnly = false;
 let sortAscending = true;
@@ -99,6 +102,67 @@ const saveCart = () => {
   } catch (error) {
     console.error('Erro ao salvar carrinho:', error);
   }
+};
+
+// Carregar favoritos do localStorage
+const loadFavorites = () => {
+  try {
+    const savedFavorites = localStorage.getItem('devstore_favorites');
+    if (savedFavorites) {
+      favorites = JSON.parse(savedFavorites);
+      updateFavoritesUI();
+    }
+  } catch (error) {
+    console.error('Erro ao carregar favoritos:', error);
+    favorites = [];
+  }
+};
+
+// Salvar favoritos no localStorage
+const saveFavorites = () => {
+  try {
+    localStorage.setItem('devstore_favorites', JSON.stringify(favorites));
+  } catch (error) {
+    console.error('Erro ao salvar favoritos:', error);
+  }
+};
+
+// Verificar se produto está nos favoritos
+const isFavorite = (productId) => {
+  return favorites.some(item => item.id === productId);
+};
+
+// Adicionar/remover dos favoritos
+const toggleFavorite = (product) => {
+  const existingIndex = favorites.findIndex(item => item.id === product.id);
+  
+  if (existingIndex >= 0) {
+    favorites.splice(existingIndex, 1);
+    showToast(`${product.name} removido dos favoritos`);
+  } else {
+    favorites.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      description: product.description
+    });
+    showToast(`${product.name} adicionado aos favoritos`);
+  }
+  
+  saveFavorites();
+  updateFavoritesUI();
+  renderProducts(getVisibleProducts());
+};
+
+// Atualizar UI dos favoritos
+const updateFavoritesUI = () => {
+  const count = favorites.length;
+  if (elements.favoritesCount) {
+    elements.favoritesCount.textContent = count;
+    elements.favoritesCount.style.display = count > 0 ? 'inline' : 'none';
+  }
+  renderFavoritesModal();
 };
 
 // Calcular total de itens no carrinho
@@ -152,7 +216,11 @@ const renderProducts = (list) => {
   list.forEach((product) => {
     const card = document.createElement("article");
     card.className = "product-card";
+    const isFav = isFavorite(product.id);
     card.innerHTML = `
+      <button class="favorite-btn ${isFav ? 'active' : ''}" data-id="${product.id}" aria-label="${isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">
+        <span class="material-icon">${isFav ? 'favorite' : 'favorite_border'}</span>
+      </button>
       <img src="${product.image}" alt="${product.name}" loading="lazy" />
       <span class="badge">${product.badge}</span>
       <h3>${product.name}</h3>
@@ -162,8 +230,10 @@ const renderProducts = (list) => {
         Adicionar
       </button>
     `;
-    const button = card.querySelector("button");
-    button.addEventListener("click", () => addToCart(product));
+    const addButton = card.querySelector(".primary-btn");
+    addButton.addEventListener("click", () => addToCart(product));
+    const favButton = card.querySelector(".favorite-btn");
+    favButton.addEventListener("click", () => toggleFavorite(product));
     fragment.appendChild(card);
   });
 
@@ -285,6 +355,74 @@ if (elements.currentYear) {
 updateSortButtonText();
 renderProducts(getVisibleProducts());
 loadCart();
+loadFavorites();
+
+// Abrir modal de favoritos
+elements.favoritesButton?.addEventListener("click", () => {
+  const favoritesModal = document.getElementById("favoritesModal");
+  if (favoritesModal) {
+    favoritesModal.classList.add("open");
+  }
+});
+
+// Renderizar modal de favoritos
+const renderFavoritesModal = () => {
+  const favoritesModal = document.getElementById("favoritesModal");
+  if (!favoritesModal) return;
+  
+  const favoritesContent = favoritesModal.querySelector('.favorites-content');
+  if (!favoritesContent) return;
+  
+  if (favorites.length === 0) {
+    favoritesContent.innerHTML = `
+      <div class="favorites-empty">
+        <span class="material-icon" style="font-size: 3rem; color: var(--muted);">favorite_border</span>
+        <p>Você ainda não tem favoritos</p>
+        <button class="ghost-btn" onclick="document.getElementById('favoritesModal').classList.remove('open')">Continuar comprando</button>
+      </div>
+    `;
+    return;
+  }
+  
+  favoritesContent.innerHTML = `
+    <div class="favorites-items">
+      ${favorites.map(item => `
+        <div class="favorites-item">
+          <img src="${item.image}" alt="${item.name}" />
+          <div class="favorites-item-info">
+            <h4>${item.name}</h4>
+            <p>${item.description || ''}</p>
+            <p class="favorites-item-price">${formatCurrency(item.price)}</p>
+            <div class="favorites-item-actions">
+              <button class="primary-btn small" onclick="addToCart(${JSON.stringify(item).replace(/"/g, '&quot;')})">Adicionar ao carrinho</button>
+              <button class="ghost-btn small" onclick="toggleFavorite(${JSON.stringify(item).replace(/"/g, '&quot;')})">Remover</button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+};
+
+// Fechar modal de favoritos
+const favoritesModalEl = document.getElementById("favoritesModal");
+if (favoritesModalEl) {
+  favoritesModalEl.addEventListener("click", (e) => {
+    if (e.target === favoritesModalEl) {
+      favoritesModalEl.classList.remove("open");
+    }
+  });
+  
+  const closeFavoritesBtn = favoritesModalEl.querySelector('.close-favorites');
+  if (closeFavoritesBtn) {
+    closeFavoritesBtn.addEventListener("click", () => {
+      favoritesModalEl.classList.remove("open");
+    });
+  }
+}
+
+// Tornar funções globais
+window.toggleFavorite = toggleFavorite;
 
 // Sistema de busca
 elements.searchInput?.addEventListener("input", (e) => {
