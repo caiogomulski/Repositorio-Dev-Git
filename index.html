@@ -28,6 +28,9 @@
       </nav>
       <div class="header-actions">
         <button class="ghost-btn" id="loginBtn">Entrar</button>
+        <button class="ghost-btn" id="historyButton" title="Histórico">
+          <span class="material-icon">history</span>
+        </button>
         <button class="ghost-btn" id="favoritesButton" title="Favoritos">
           <span class="material-icon">favorite</span>
           <span class="favorites-count" id="favoritesCount">0</span>
@@ -127,6 +130,13 @@
           <button class="category-filter" data-category="hardware">Hardware</button>
           <button class="category-filter" data-category="casa">Casa</button>
         </div>
+        <div class="viewed-products" id="viewedProducts" style="display: none;">
+          <div class="viewed-header">
+            <span class="material-icon">history</span>
+            <h3>Visualizados recentemente</h3>
+          </div>
+          <div class="viewed-list"></div>
+        </div>
         <div class="products__grid" id="productGrid" aria-live="polite" role="region" aria-label="Lista de produtos"></div>
         <div class="products-loading" id="productsLoading" style="display: none;" aria-hidden="true">
           <div class="loading-spinner"></div>
@@ -220,6 +230,14 @@
       <button class="close-favorites" aria-label="Fechar">&times;</button>
       <h2>Meus Favoritos</h2>
       <div class="favorites-content"></div>
+    </div>
+  </div>
+  
+  <div class="history-overlay" id="historyModal" aria-hidden="true">
+    <div class="history-card">
+      <button class="close-history" onclick="document.getElementById('historyModal').classList.remove('open')" aria-label="Fechar">&times;</button>
+      <h2>Histórico de Visualizações</h2>
+      <div class="history-content"></div>
     </div>
   </div>
   

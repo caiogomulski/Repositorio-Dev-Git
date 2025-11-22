@@ -88,6 +88,7 @@ const elements = {
 let cart = [];
 let favorites = [];
 let productRatings = {};
+let viewedProducts = [];
 let toastTimeout = null;
 let showHomeOfficeOnly = false;
 let sortAscending = true;
@@ -142,6 +143,95 @@ const loadRatings = () => {
     console.error('Erro ao carregar avaliações:', error);
     productRatings = {};
   }
+};
+
+// Carregar histórico de visualizações
+const loadViewedProducts = () => {
+  try {
+    const saved = localStorage.getItem('devstore_viewed');
+    if (saved) {
+      viewedProducts = JSON.parse(saved);
+      updateViewedProductsUI();
+    }
+  } catch (error) {
+    console.error('Erro ao carregar histórico:', error);
+    viewedProducts = [];
+  }
+};
+
+// Salvar histórico de visualizações
+const saveViewedProducts = () => {
+  try {
+    localStorage.setItem('devstore_viewed', JSON.stringify(viewedProducts));
+  } catch (error) {
+    console.error('Erro ao salvar histórico:', error);
+  }
+};
+
+// Adicionar produto ao histórico
+const addToViewed = (product) => {
+  // Remove se já existe
+  viewedProducts = viewedProducts.filter(p => p.id !== product.id);
+  // Adiciona no início
+  viewedProducts.unshift({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    viewedAt: new Date().toISOString()
+  });
+  // Mantém apenas os últimos 10
+  if (viewedProducts.length > 10) {
+    viewedProducts = viewedProducts.slice(0, 10);
+  }
+  saveViewedProducts();
+  updateViewedProductsUI();
+};
+
+// Atualizar UI do histórico
+const updateViewedProductsUI = () => {
+  const container = document.getElementById('viewedProducts');
+  if (!container) return;
+  
+  if (viewedProducts.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+  
+  container.style.display = 'block';
+  const list = container.querySelector('.viewed-list');
+  if (!list) return;
+  
+  list.innerHTML = viewedProducts.slice(0, 5).map(item => {
+    const product = productData.find(p => p.id === item.id);
+    if (!product) return '';
+    return `
+      <div class="viewed-item" onclick="scrollToProduct(${item.id})">
+        <img src="${item.image}" alt="${item.name}" />
+        <div class="viewed-item-info">
+          <h4>${item.name}</h4>
+          <p>${formatCurrency(item.price)}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+// Scroll para produto
+const scrollToProduct = (productId) => {
+  const product = productData.find(p => p.id === productId);
+  if (!product) return;
+  
+  const cards = document.querySelectorAll('.product-card');
+  cards.forEach(card => {
+    if (card.querySelector(`[data-id="${productId}"]`)) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.animation = 'highlight 1s ease';
+      setTimeout(() => {
+        card.style.animation = '';
+      }, 1000);
+    }
+  });
 };
 
 // Salvar avaliações no localStorage
@@ -339,22 +429,33 @@ const renderProducts = (list) => {
           </button>
         </div>
       `;
-      const addButton = card.querySelector(".primary-btn");
-      addButton.addEventListener("click", () => addToCart(product));
-      addButton.addEventListener("keydown", (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          addToCart(product);
-        }
-      });
-      const favButton = card.querySelector(".favorite-btn");
-      favButton.addEventListener("click", () => toggleFavorite(product));
-      favButton.addEventListener("keydown", (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          toggleFavorite(product);
-        }
-      });
+    const addButton = card.querySelector(".primary-btn");
+    addButton.addEventListener("click", () => {
+      addToCart(product);
+      addToViewed(product);
+    });
+    addButton.addEventListener("keydown", (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        addToCart(product);
+        addToViewed(product);
+      }
+    });
+    const favButton = card.querySelector(".favorite-btn");
+    favButton.addEventListener("click", () => toggleFavorite(product));
+    favButton.addEventListener("keydown", (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleFavorite(product);
+      }
+    });
+    
+    // Adicionar ao histórico ao clicar no card
+    card.addEventListener("click", (e) => {
+      if (!e.target.closest('button') && !e.target.closest('.favorite-btn')) {
+        addToViewed(product);
+      }
+    });
       fragment.appendChild(card);
       
       // Animação de entrada
@@ -507,6 +608,7 @@ renderProducts(getVisibleProducts());
 loadCart();
 loadFavorites();
 loadRatings();
+loadViewedProducts();
 
 // Abrir modal de favoritos
 elements.favoritesButton?.addEventListener("click", () => {
@@ -515,6 +617,72 @@ elements.favoritesButton?.addEventListener("click", () => {
     favoritesModal.classList.add("open");
   }
 });
+
+// Abrir modal de histórico
+document.getElementById("historyButton")?.addEventListener("click", () => {
+  const historyModal = document.getElementById("historyModal");
+  if (historyModal) {
+    renderHistoryModal();
+    historyModal.classList.add("open");
+  }
+});
+
+// Renderizar modal de histórico
+const renderHistoryModal = () => {
+  const modal = document.getElementById("historyModal");
+  if (!modal) return;
+  
+  const content = modal.querySelector('.history-content');
+  if (!content) return;
+  
+  if (viewedProducts.length === 0) {
+    content.innerHTML = `
+      <div class="history-empty">
+        <span class="material-icon" style="font-size: 3rem; color: var(--muted);">history</span>
+        <p>Você ainda não visualizou nenhum produto</p>
+      </div>
+    `;
+    return;
+  }
+  
+  content.innerHTML = `
+    <div class="history-items">
+      ${viewedProducts.map(item => {
+        const product = productData.find(p => p.id === item.id);
+        if (!product) return '';
+        const viewedDate = new Date(item.viewedAt);
+        const timeAgo = getTimeAgo(viewedDate);
+        return `
+          <div class="history-item" onclick="scrollToProduct(${item.id}); document.getElementById('historyModal').classList.remove('open')">
+            <img src="${item.image}" alt="${item.name}" />
+            <div class="history-item-info">
+              <h4>${item.name}</h4>
+              <p>${formatCurrency(item.price)}</p>
+              <span class="history-time">${timeAgo}</span>
+            </div>
+            <button class="ghost-btn small" onclick="event.stopPropagation(); addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
+              <span class="material-icon">shopping_bag</span>
+            </button>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+};
+
+// Calcular tempo relativo
+const getTimeAgo = (date) => {
+  const now = new Date();
+  const diff = now - date;
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  
+  if (minutes < 1) return 'Agora';
+  if (minutes < 60) return `${minutes} min atrás`;
+  if (hours < 24) return `${hours}h atrás`;
+  return `${days} dia${days > 1 ? 's' : ''} atrás`;
+};
 
 // Renderizar modal de favoritos
 const renderFavoritesModal = () => {
