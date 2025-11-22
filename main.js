@@ -181,3 +181,59 @@ if (elements.currentYear) {
 
 updateSortButtonText();
 renderProducts(getVisibleProducts());
+
+const authElements = {
+  modal: document.getElementById("authModal"),
+  loginBtn: document.getElementById("loginBtn"),
+  closeBtn: document.getElementById("closeModal"),
+  loginFormWrapper: document.getElementById("loginFormWrapper"),
+  registerFormWrapper: document.getElementById("registerFormWrapper"),
+  showRegisterBtn: document.getElementById("showRegister"),
+  showLoginBtn: document.getElementById("showLogin"),
+};
+
+authElements.loginBtn?.addEventListener("click", () => {
+  authElements.modal.classList.add("open");
+});
+
+const closeModal = () => {
+  authElements.modal.classList.remove("open");
+};
+
+authElements.closeBtn?.addEventListener("click", closeModal);
+
+authElements.modal?.addEventListener("click", (e) => {
+  if (e.target === authElements.modal) {
+    closeModal();
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && authElements.modal.classList.contains("open")) {
+    closeModal();
+  }
+});
+
+authElements.showRegisterBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  authElements.loginFormWrapper.classList.add("hidden");
+  authElements.registerFormWrapper.classList.remove("hidden");
+});
+
+authElements.showLoginBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  authElements.registerFormWrapper.classList.add("hidden");
+  authElements.loginFormWrapper.classList.remove("hidden");
+});
+
+document.getElementById("formLogin")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  closeModal();
+  showToast("Login realizado com sucesso!");
+});
+
+document.getElementById("formRegister")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  closeModal();
+  showToast("Conta criada! Bem-vindo(a).");
+});
