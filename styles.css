@@ -372,6 +372,16 @@ a {
   gap: 1.25rem;
 }
 
+.faq .section-heading {
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.faq .section-heading > * {
+  width: 100%;
+}
+
 .faq-list article {
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -390,6 +400,11 @@ a {
   margin-top: 0;
   margin-bottom: 0.75rem;
   font-size: 1.05rem;
+}
+
+.faq-list p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .faq-contact {
