@@ -385,6 +385,13 @@ a {
   font-size: 1.05rem;
 }
 
+.faq-contact {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 500;
+}
+
 .site-footer {
   background: #0f172a;
   color: #e2e8f0;
