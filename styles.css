@@ -361,6 +361,30 @@ a {
   margin: 1rem 0 0.25rem;
 }
 
+.faq {
+  padding: 4rem 0;
+  background: var(--card);
+}
+
+.faq-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.faq-list article {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: #fff;
+}
+
+.faq-list h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+}
+
 .site-footer {
   background: #0f172a;
   color: #e2e8f0;
