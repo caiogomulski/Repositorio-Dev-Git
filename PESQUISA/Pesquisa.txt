@@ -1,0 +1,5 @@
+Pesquisa Branch e Merge
+
+A criação de uma branch funciona como tirar uma cópia de um roteiro original para trabalhar em uma sala separada. Isso permite que você escreva cenas novas e faça rabiscos livremente nessa cópia, sem correr o risco de estragar a versão principal que todos estão usando.
+
+O merge é o momento de consolidar o trabalho. É quando pegamos as páginas da sua cópia modificada e as "colamos" definitivamente no roteiro original. Assim, a história oficial passa a conter as suas contribuições e todos da equipe ficam com a versão atualizada.
