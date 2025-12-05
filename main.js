@@ -1516,6 +1516,16 @@ const setupTheme = () => {
   const body = document.body;
   const icon = themeBtn.querySelector('.material-icon');
 
+  const loadTheme = () => {
+    const savedTheme = localStorage.getItem('devstore_theme');
+    if (savedTheme === 'dark') {
+      body.classList.add('dark');
+      if (icon) icon.textContent = 'light_mode';
+    }
+  };
+
+  loadTheme();
+
   themeBtn.addEventListener('click', () => {
     body.classList.toggle('dark');
     
@@ -1524,6 +1534,8 @@ const setupTheme = () => {
     } else {
       icon.textContent = 'dark_mode';
     }
+
+    localStorage.setItem('devstore_theme', body.classList.contains('dark') ? 'dark' : 'light');
   });
 };
 
