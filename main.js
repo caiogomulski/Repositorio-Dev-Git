@@ -1510,3 +1510,23 @@ loadRatings();
 loadViewedProducts();
 loadCompareProducts();
 loadCoupon();
+
+const setupTheme = () => {
+  const themeBtn = document.getElementById('themeBtn');
+  const body = document.body;
+  const icon = themeBtn.querySelector('.material-icon');
+
+  themeBtn.addEventListener('click', () => {
+    body.classList.toggle('dark');
+    
+    if (body.classList.contains('dark')) {
+      icon.textContent = 'light_mode';
+    } else {
+      icon.textContent = 'dark_mode';
+    }
+  });
+};
+
+if (document.getElementById('themeBtn')) {
+  setupTheme();
+}
