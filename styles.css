@@ -341,9 +341,21 @@ a {
 }
 
 .cta-banner {
-  background: var(--bg-alt);
+  background: linear-gradient(120deg, #111827 0%, #312e81 55%, #7c3aed 115%);
   color: #fff;
   padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.15), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.2), transparent 40%);
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .banner__grid {
@@ -351,6 +363,8 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 3rem;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .banner__grid img {
