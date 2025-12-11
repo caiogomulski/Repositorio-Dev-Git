@@ -148,6 +148,20 @@ a {
 
 .hero {
   padding: 4.5rem 0 3.5rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f0ff 100%);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.15), transparent 55%),
+    radial-gradient(circle at 85% 0%, rgba(59, 130, 246, 0.18), transparent 45%);
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 .hero__grid {
@@ -155,6 +169,8 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2.5rem;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .hero__content h1 {
