@@ -45,11 +45,13 @@ a {
 }
 
 .site-header {
-  background: var(--card);
+  background: rgba(255, 255, 255, 0.9);
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
 }
 
 .site-header .container {
