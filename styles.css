@@ -45,11 +45,13 @@ a {
 }
 
 .site-header {
-  background: var(--card);
+  background: rgba(255, 255, 255, 0.9);
   position: sticky;
   top: 0;
   z-index: 10;
-  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.05);
 }
 
 .site-header .container {
@@ -148,6 +150,20 @@ a {
 
 .hero {
   padding: 4.5rem 0 3.5rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f0ff 100%);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.15), transparent 55%),
+    radial-gradient(circle at 85% 0%, rgba(59, 130, 246, 0.18), transparent 45%);
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 .hero__grid {
@@ -155,6 +171,8 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2.5rem;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .hero__content h1 {
@@ -292,14 +310,16 @@ a {
 }
 
 .product-card {
-  background: var(--card);
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f2ff 100%);
   border-radius: 24px;
   padding: 1.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(124, 58, 237, 0.12);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
 }
 
 .product-card img {
@@ -323,9 +343,21 @@ a {
 }
 
 .cta-banner {
-  background: var(--bg-alt);
+  background: linear-gradient(120deg, #111827 0%, #312e81 55%, #7c3aed 115%);
   color: #fff;
   padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.15), transparent 45%),
+    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.2), transparent 40%);
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .banner__grid {
@@ -333,6 +365,8 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 3rem;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .banner__grid img {
@@ -351,14 +385,88 @@ a {
 }
 
 .testimonial-cards article {
-  background: var(--card);
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f2ff 100%);
   border-radius: 20px;
   padding: 1.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(124, 58, 237, 0.12);
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.testimonial-cards article::before {
+  content: "“";
+  position: absolute;
+  top: -10px;
+  right: 1.5rem;
+  font-size: 4.5rem;
+  color: rgba(124, 58, 237, 0.12);
+  line-height: 1;
+  font-family: "Times New Roman", Georgia, serif;
+  user-select: none;
 }
 
 .testimonial-cards h3 {
   margin: 1rem 0 0.25rem;
+  color: var(--primary-dark);
+}
+
+.testimonial-cards span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.faq {
+  padding: 4rem 0;
+  background: var(--card);
+}
+
+.faq-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.faq .section-heading {
+  flex-direction: column;
+  text-align: center;
+  margin-bottom: 2.25rem;
+}
+
+.faq .section-heading > * {
+  width: 100%;
+}
+
+.faq-list article {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  background: #fff;
+  box-shadow: 0 12px 25px rgba(15, 23, 42, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.faq-list article:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.12);
+}
+
+.faq-list h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.05rem;
+}
+
+.faq-list p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.faq-contact {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 500;
 }
 
 .site-footer {
