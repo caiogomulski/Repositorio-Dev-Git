@@ -584,6 +584,7 @@ const renderProducts = (list) => {
       card.setAttribute('role', 'article');
       card.setAttribute('aria-label', `Produto: ${product.name}`);
       const isFav = isFavorite(product.id);
+      const isLowStock = index % 2 !== 0;
       const rating = parseFloat(getProductRating(product.id));
       const reviewsCount = getProductReviewsCount(product.id);
       const stars = Math.round(rating);
@@ -592,6 +593,7 @@ const renderProducts = (list) => {
           <span class="material-icon">${isFav ? 'favorite' : 'favorite_border'}</span>
         </button>
         <img src="${product.image}" alt="${product.name}" loading="lazy" />
+        ${isLowStock ? '<span class="badge" style="background: #ef4444; color: white; top: 1rem; right: 1rem; left: auto;">Últimas unidades</span>' : ''}
         <span class="badge">${product.badge}</span>
         <h3>${product.name}</h3>
         <p>${product.description}</p>
