@@ -216,6 +216,18 @@ const removeFromCompare = (productId) => {
   showToast('Produto removido da comparação');
 };
 
+const clearCart = () => {
+  if (cart.length === 0) return;
+  if (confirm('Tem certeza que deseja esvaziar o carrinho?')) {
+    cart = [];
+    saveCart();
+    updateCartUI();
+    showToast('Carrinho esvaziado com sucesso.');
+  }
+};
+
+window.clearCart = clearCart;
+
 // Atualizar UI de comparação
 const updateCompareUI = () => {
   const compareBtn = document.getElementById('compareButton');
@@ -1480,6 +1492,9 @@ const renderCartModal = () => {
         </div>
       </div>
       <button class="primary-btn full-width">Finalizar compra</button>
+      <button class="ghost-btn full-width" onclick="clearCart()" style="color: #ef4444; border-color: #ef4444; margin-bottom: 0.5rem;">
+     Esvaziar Carrinho
+      </button>
       <button class="ghost-btn full-width" onclick="document.getElementById('cartModal').classList.remove('open')">Continuar comprando</button>
     </div>
   `;
