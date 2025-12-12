@@ -216,6 +216,18 @@ const removeFromCompare = (productId) => {
   showToast('Produto removido da comparação');
 };
 
+const clearCart = () => {
+  if (cart.length === 0) return;
+  if (confirm('Tem certeza que deseja esvaziar o carrinho?')) {
+    cart = [];
+    saveCart();
+    updateCartUI();
+    showToast('Carrinho esvaziado com sucesso.');
+  }
+};
+
+window.clearCart = clearCart;
+
 // Atualizar UI de comparação
 const updateCompareUI = () => {
   const compareBtn = document.getElementById('compareButton');
@@ -572,6 +584,7 @@ const renderProducts = (list) => {
       card.setAttribute('role', 'article');
       card.setAttribute('aria-label', `Produto: ${product.name}`);
       const isFav = isFavorite(product.id);
+      const isLowStock = index % 2 !== 0;
       const rating = parseFloat(getProductRating(product.id));
       const reviewsCount = getProductReviewsCount(product.id);
       const stars = Math.round(rating);
@@ -580,6 +593,7 @@ const renderProducts = (list) => {
           <span class="material-icon">${isFav ? 'favorite' : 'favorite_border'}</span>
         </button>
         <img src="${product.image}" alt="${product.name}" loading="lazy" />
+        ${isLowStock ? '<span class="badge" style="background: #ef4444; color: white; top: 1rem; right: 1rem; left: auto;">Últimas unidades</span>' : ''}
         <span class="badge">${product.badge}</span>
         <h3>${product.name}</h3>
         <p>${product.description}</p>
@@ -1480,6 +1494,9 @@ const renderCartModal = () => {
         </div>
       </div>
       <button class="primary-btn full-width">Finalizar compra</button>
+      <button class="ghost-btn full-width" onclick="clearCart()" style="color: #ef4444; border-color: #ef4444; margin-bottom: 0.5rem;">
+     Esvaziar Carrinho
+      </button>
       <button class="ghost-btn full-width" onclick="document.getElementById('cartModal').classList.remove('open')">Continuar comprando</button>
     </div>
   `;
@@ -1501,6 +1518,19 @@ if (cartModal) {
     });
   }
 }
+const backToTopBtn = document.getElementById('backToTop');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 300) {
+    backToTopBtn.style.display = 'flex';
+  } else {
+    backToTopBtn.style.display = 'none';
+  }
+});
+
+backToTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 
 updateSortButtonText();
 renderProducts(getVisibleProducts());
